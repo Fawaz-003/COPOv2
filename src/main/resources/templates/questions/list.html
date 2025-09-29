@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Questions by Department</title>
+
+	<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+	
+
+    <div th:replace="~{/navbar :: navbar}"></div>
+
+	<!-- Flash Messages -->
+	<div class="mt-3">
+	    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+	    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+	</div>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Questions</h1>
+
+        <div class="container mt-4">
+			<div class="row">
+			    <!-- Questions Action -->
+			    <div class="col-md-4 mb-3">
+			        <div class="card shadow-card p-3 h-100">
+			            <h5 class="mb-3">Questions Action</h5>
+			            <a href="/questions/new" class="btn btn-primary mb-3">Add New Questions</a>
+			            <div class="mb-3">
+			                <input type="text" id="searchInput" class="form-control" placeholder="Search...." onkeyup="searchTable()">
+			            </div>
+						
+						
+
+			        </div>
+			    </div>
+
+			    <!-- Filter Form -->
+			    <div class="col-md-4 mb-3">
+			        <div class="card shadow-card p-3 h-100">
+			            <form id="QuestionsForm">
+			                <input type="hidden" id="studentId">
+			                <div class="row">
+			                    <div class="col-md-6">
+			                        <label class="form-label">Department:</label>
+			                        <select name="department" id="department" class="form-select">
+			                            <option value="">All Departments</option>
+			                            <option th:each="dept : ${departments}" th:value="${dept.name}" th:text="${dept.name}" th:selected="${dept.name == selectedDepartment}"></option>
+			                        </select>
+			                    </div>
+			                    <div class="col-md-6">
+			                        <label class="form-label">Batch:</label>
+			                        <select name="batch" id="batch" class="form-select">
+			                            <option value="">All Batches</option>
+			                            <option th:each="batch : ${batches}" th:value="${batch.name}" th:text="${batch.name}" th:selected="${batch.name == selectedBatch}"></option>
+			                        </select>
+			                    </div>
+			                </div>
+			                <div class="row mt-3">
+			                    <div class="col-md-4">
+			                        <label class="form-label">Semester:</label>
+			                        <select class="form-control" id="semester">
+			                            <option value="">-- Select Semester --</option>
+			                            <option th:each="s : ${#numbers.sequence(1,8)}" th:value="${s}" th:text="${s}"></option>
+			                        </select>
+			                    </div>
+			                    <div class="col-md-4">
+			                        <label class="form-label">Subject:</label>
+			                        <select class="form-control" id="subject" disabled>
+			                            <option value="">-- Select Subject --</option>
+			                        </select>
+			                    </div>
+			                    <div class="col-md-4">
+			                        <label class="form-label">Exam Type:</label>
+			                        <select class="form-control" id="examType">
+			                            <option value="">-- Select Exam Type --</option>
+			                            <option value="CAT 1">CAT 1</option>
+			                            <option value="CAT 2">CAT 2</option>
+			                            <option value="Model">Model</option>
+			                            <option value="CAT 1 Lab">CAT 1 Lab</option>
+			                            <option value="CAT 2 Lab">CAT 2 Lab</option>
+			                            <option value="Model Lab">Model Lab</option>
+			                        </select>
+			                    </div>
+			                </div>
+			                <button type="button" class="btn btn-success mt-3" id="loadQuestionsBtn">Load Questions</button>
+			            </form>
+			        </div>
+			    </div>
+
+			    <!-- Upload excel -->
+			    <div class="col-md-4 mb-3">
+			        <div class="card shadow-card p-3 h-100">
+			            <h5 class="mb-3">📁 Upload Questions Using Excel </h5>
+			            <form th:action="@{/questions/upload-excel}" method="post" enctype="multipart/form-data">
+			                <div class="mb-2">
+			                    <input type="file" name="file" class="form-control" required>
+			                </div>
+			                <button type="submit" class="btn btn-success w-100">⬆️ Upload Excel</button>
+			            </form>
+			        </div>
+			    </div>
+			</div>
+
+
+        </div> <!-- Questions Table -->
+        <div id="questionsTable">
+            <h2 th:if="${selectedDepartmentName != null}" th:text="${selectedDepartmentName}"></h2>
+            <table class="table table-bordered" th:if="${questions.size() > 0}">
+                <thead>
+                    <tr>
+                        <th>Part</th>
+                        <th>Question Number</th>
+                        <th>Text</th>
+                        <th>Max Marks</th>
+                        <th>Course Outcome</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+            <p th:if="${questions.size() == 0}" class="text-center">No records found for this filter.</p>
+        </div>
+    </div>
+
+    <!-- JavaScript for Loading Subjects and Questions -->
+    <script>
+        // Load subjects based on department and semester
+        $('#department, #semester').on('change', function () {
+            const department = $('#department').val();
+            const semester = $('#semester').val();
+
+            if (department && semester) {
+                $.ajax({
+                    url: '/subjects/by-dept-sem',
+                    method: 'GET',
+                    data: { department: department, semester: semester },
+                    success: function (subjects) {
+                        const subjectSelect = $('#subject');
+                        subjectSelect.empty().append('<option value="">Select Subject</option>');
+
+                        if (subjects.length > 0) {
+                            subjects.forEach(sub => {
+                                subjectSelect.append(`<option value="${sub.name}">${sub.name}</option>`);
+                            });
+                        } else {
+                            subjectSelect.append('<option disabled>No subjects found</option>');
+                        }
+
+                        subjectSelect.prop('disabled', false);
+                    },
+                    error: function () {
+                        alert("Failed to load subjects.");
+                    }
+                });
+            } else {
+                $('#subject').empty().append('<option value="">Select Subject</option>').prop('disabled', true);
+            }
+        });
+
+        // Load questions when 'Load Questions' button is clicked
+        $('#loadQuestionsBtn').on('click', function () {
+            const department = $('#department').val();
+            const batch = $('#batch').val();
+            const semester = $('#semester').val();
+            const subject = $('#subject').val();
+            const examType = $('#examType').val();
+
+            if (department && semester && subject && examType) {
+                $.ajax({
+                    url: '/questions/filtered',
+                    method: 'GET',
+                    data: {
+                        department: department,
+                        batch: batch,
+                        semester: semester,
+                        subject: subject,
+                        examType: examType
+                    },
+                    success: function (questions) {
+                        const questionsContainer = $('#questionsTable');
+                        questionsContainer.empty();
+
+                        if (questions.length > 0) {
+                            let rows = '';
+                            questions.forEach(q => {
+                                rows += `
+                                    <tr>
+                                        <td>${q.part}</td>
+                                        <td>${q.questionNumber}</td>
+                                        <td>${q.text}</td>
+                                        <td>${q.maxMarks}</td>
+                                        <td>${q.courseOutcome}</td>
+                                        <td>
+                                            <a href="/questions/edit/${q.id}" class="btn btn-warning btn-sm">Edit</a>
+											<button href="#" onclick="deleteQuestion(${q.id}, event)" class="btn btn-danger btn-sm">Delete</a>
+
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                            questionsContainer.append(`
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Part</th>
+                                            <th>Question Number</th>
+                                            <th>Text</th>
+                                            <th>Max Marks</th>
+                                            <th>Course Outcome</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${rows}
+                                    </tbody>
+                                </table>
+                            `);
+                        } else {
+                            questionsContainer.append('<p>No questions found for the selected filter.</p>');
+                        }
+                    },
+                    error: function () {
+                        alert("Failed to load questions.");
+                    }
+                });
+            } else {
+                alert("Please fill all filters to load questions.");
+            }
+        });
+		
+
+    </script>
+	
+	
+
+	
+	<script>
+		function deleteQuestion(id, event) {
+		    event.preventDefault(); // Prevent default anchor behavior
+		    if (confirm("Are you sure you want to delete this question?")) {
+				$.ajax({
+				    url: `/questions/delete/${id}`,
+				    type: 'GET',
+				}).done(function() {
+				    console.log("Deletion successful");
+				    $('#loadQuestionsBtn').click();
+				}).fail(function(xhr, status, error) {
+				    console.error("Deletion failed:", xhr.responseText);
+				    alert("Failed to delete question.");
+				});
+
+		    }
+		}
+
+	</script>
+
+	
+	<!-- JavaScript for searching.... -->
+		<script>
+
+			
+			function searchTable() {
+			    const input = document.getElementById("searchInput").value.toUpperCase();
+			    const table = document.querySelector("table");
+			    if (!table) return; // Avoid error if table is not present
+			    const rows = table.getElementsByTagName("tr");
+
+			    for (let i = 1; i < rows.length; i++) {
+			        let found = false;
+			        const cells = rows[i].getElementsByTagName("td");
+			        for (let j = 0; j < cells.length; j++) {
+			            const cell = cells[j];
+			            if (cell && cell.textContent.toUpperCase().includes(input)) {
+			                found = true;
+			                break;
+			            }
+			        }
+			        rows[i].style.display = found ? "" : "none";
+			    }
+			}
+
+
+		</script>
+</body>
+</html>

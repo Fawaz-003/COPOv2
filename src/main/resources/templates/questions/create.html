@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Add Questions</title>
+	<!-- Bootstrap CDN -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	
+</head>
+
+<body>
+	<div th:replace="~{/navbar :: navbar}"></div>
+	
+	<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+	<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+
+	<div class="container mt-5">
+		<div class="card shadow-card p-3 h-100">
+			<h1 class="text-center">Add Questions</h1>
+			<form th:action="@{/questions}" method="post" id="questionForm"  onsubmit="return confirmSave();">
+				<!-- Global Fields -->
+
+
+				<div class="form-group">
+					<label for="department">Department</label>
+					<select id="department" name="departmentId" class="form-control" required>
+						<option value="">-- Select Department --</option>
+						<option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="department">Batch</label>
+					<select id="batch" name="batchId" class="form-control" required>
+						<option value="">-- Select Batch --</option>
+						<option th:each="batch : ${batches}" th:value="${batch.id}" th:text="${batch.name}"></option>
+					</select>
+				</div>
+
+				<div class="col-md-4">
+					<label class="form-label">Semester:</label>
+					<select class="form-control" id="semester" name="semester">
+						<option value="">-- Select Semester --</option>
+						<option th:each="s : ${#numbers.sequence(1,8)}" th:value="${s}" th:text="${s}"></option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Subject:</label>
+					<select class="form-control" id="subject" name="subjectId" disabled required>
+						<option value="">-- Select Subject --</option>
+					</select>
+				</div>
+				<!--<div class="form-group">
+					<label for="subject">Subject</label>
+					<select id="subject" name="subjectId" class="form-control" required>
+						<option th:each="sub : ${subjects}" th:value="${sub.id}" th:text="${sub.name}"></option>
+					</select>
+				</div>-->
+
+				<div class="form-group">
+					<label for="examType">Exam Type</label>
+					<select id="examType" name="examType" class="form-control" required>
+						<option value="">-- Select ExamType --</option>
+						<option value="CAT 1">CAT 1</option>
+						<option value="CAT 2">CAT 2</option>
+						<option value="Model">Model</option>
+						<option value="CAT 1 Lab">CAT 1 Lab</option>
+						<option value="CAT 2 Lab">CAT 2 Lab</option>
+						<option value="Model Lab">Model Lab</option>
+					</select>
+				</div>
+
+
+				<hr>
+
+				<!-- Questions Section -->
+				<div id="questionContainer">
+					<!-- Initial Question Block -->
+					<div class="question-block mb-4">
+						<h5>Questions</h5>
+						<div class="form-group">
+							<label for="part">Part</label>
+							<select id="part" name="questions[0].part" class="form-control" required>
+								<option value="Part A">Part A</option>
+								<option value="Part B">Part B</option>
+								<option value="Part C">Part C</option>
+								<option value="Lab">Lab</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="questionNumber">Question Number</label>
+							<input type="text" id="questionNumber" name="questions[0].questionNumber"
+								class="form-control" value="Q1" required>
+						</div>
+						<div class="form-group">
+							<label for="text">Question Text</label>
+							<textarea id="text" name="questions[0].text" class="form-control" rows="3"
+								required></textarea>
+						</div>
+						<div class="form-group">
+							<label for="maxMarks">Maximum Marks</label>
+							<input type="number" id="maxMarks" name="questions[0].maxMarks" class="form-control"
+								required>
+						</div>
+						<div class="form-group">
+							<label for="courseOutcome">Course Outcome</label>
+							<select id="courseOutcome" name="questions[0].courseOutcome" class="form-control" required>
+								<option value="CO1">CO1</option>
+								<option value="CO2">CO2</option>
+								<option value="CO3">CO3</option>
+								<option value="CO4">CO4</option>
+								<option value="CO5">CO5</option>
+							</select>
+						</div>
+						<hr>
+					</div>
+				</div>
+
+				<!-- Buttons -->
+				<button type="button" class="btn btn-primary" id="addQuestion">Add Another Question</button>
+				<button type="submit" class="btn btn-success mt-3">Save All Questions</button>
+				<a href="/questions" class="btn btn-secondary mt-3">Back to List</a>
+			</form>
+			<div class="card shadow-card p-3 h-100">
+			</div>
+
+
+
+			<script>
+			    function confirmSave() {
+			        return confirm('Are you sure you want to save?');
+			    }
+			</script>
+
+
+			<script>
+
+
+				// Load subjects based on department and semester
+				$('#department, #semester').on('change', function () {
+					const department = $('#department').val();
+					const semester = $('#semester').val();
+
+					if (department && semester) {
+						$.ajax({
+							url: '/subjects/by-deptId-sem',
+							method: 'GET',
+							data: {department: department, semester: semester},
+							success: function (subjects) {
+								const subjectSelect = $('#subject');
+								subjectSelect.empty().append('<option value="">Select Subject</option>');
+
+								if (subjects.length > 0) {
+									subjects.forEach(sub => {
+										subjectSelect.append(`<option value="${sub.id}">${sub.name}</option>`);
+									});
+								} else {
+									subjectSelect.append('<option disabled>No subjects found</option>');
+								}
+
+								subjectSelect.prop('disabled', false);
+							},
+							error: function () {
+								alert("Failed to load subjects.");
+							}
+						});
+					} else {
+						$('#subject').empty().append('<option value="">Select Subject</option>').prop('disabled', true);
+					}
+				});
+
+
+
+
+				let questionIndex = 1;
+
+				document.getElementById('addQuestion').addEventListener('click', function () {
+					const container = document.getElementById('questionContainer');
+					const newBlock = `
+			<div class="question-block mb-4 border p-3 rounded bg-light position-relative">
+				<h5>Questions</h5>
+				<div class="form-group">
+					<label for="part">Part</label>
+					<select name="questions[${questionIndex}].part" class="form-control" required>
+						<option value="Part A">Part A</option>
+						<option value="Part B">Part B</option>
+						<option value="Part C">Part C</option>
+						<option value="Lab">Lab</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="questionNumber">Question Number</label>
+					<input type="text" name="questions[${questionIndex}].questionNumber" class="form-control" value="Q${questionIndex + 1}" required>
+				</div>
+				<div class="form-group">
+					<label for="text">Question Text</label>
+					<textarea name="questions[${questionIndex}].text" class="form-control" rows="3" required></textarea>
+				</div>
+				<div class="form-group">
+					<label for="maxMarks">Maximum Marks</label>
+					<input type="number" name="questions[${questionIndex}].maxMarks" class="form-control" required>
+				</div>
+				<div class="form-group">
+					<label for="courseOutcome">Course Outcome</label>
+					<select name="questions[${questionIndex}].courseOutcome" class="form-control" required>
+						<option value="CO1">CO1</option>
+						<option value="CO2">CO2</option>
+						<option value="CO3">CO3</option>
+						<option value="CO4">CO4</option>
+						<option value="CO5">CO5</option>
+					</select>
+				</div>
+				<button type="button" class="btn btn-danger btn-sm mt-2 remove-question">Remove</button>
+				<hr>
+			</div>
+		`;
+					container.insertAdjacentHTML('beforeend', newBlock);
+					questionIndex++;
+				});
+
+				// Delegate remove event
+				document.getElementById('questionContainer').addEventListener('click', function (e) {
+					if (e.target && e.target.classList.contains('remove-question')) {
+						e.target.closest('.question-block').remove();
+					}
+				});
+			</script>
+
+</body>
+
+</html>

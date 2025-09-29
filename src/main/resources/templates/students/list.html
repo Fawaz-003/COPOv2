@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Student List (With Filter)</title>
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Bootstrap CDN -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<style>
+		.table thead th {
+			position: sticky;
+			top: 0;
+			background-color: #f8f9fa;
+		}
+
+		.shadow-card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+			border-radius: 8px;
+		}
+
+		@media (max-width: 768px) {
+			.table-responsive {
+				font-size: 14px;
+			}
+
+			.form-select,
+			.btn {
+				margin-bottom: 10px;
+				width: 100%;
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<div th:replace="~{/navbar :: navbar}"></div>
+
+
+	<!-- Flash Messages -->
+	<div class="mt-3">
+		<div th:if="${success}" class="alert alert-success" th:utext="${success}"></div>
+		<div th:if="${error}" class="alert alert-danger" th:utext="${error}"></div>
+	</div>
+
+
+	<div class="container mt-5">
+		<h1 class="text-center mb-4">Student List </h1>
+		<div class="row mb-4">
+
+			<!-- Add New Student + Search -->
+			<div class="col-md-4 mb-3">
+				<div class="card shadow-card p-3 h-100">
+					<h5 class="mb-3">Student Actions</h5>
+					<a href="/students/new" class="btn btn-primary w-100 mb-2">➕ Add New Student</a>
+					<label for="search" class="form-label">🔍 Search...</label>
+					<input type="text" id="searchInput" class="form-control" placeholder="🔍 Search..."
+						onkeyup="searchTable()">
+					<label for="Excel" class="form-label">Export To Excel</label>
+					<button class="btn btn-success w-100 mt-2" onclick="exportTableToExcel()">📤 Export to
+						Excel</button>
+
+				</div>
+			</div>
+
+			<!-- Filter Form -->
+			<div class="col-md-4 mb-3">
+				<div class="card shadow-card p-3 h-100">
+					<h5 class="mb-3">Filter Students</h5>
+					<form id="filterForm">
+						<div class="mb-2">
+                            <label for="department" class="form-label">Department</label>
+                            <select name="department" id="department" class="form-select">
+                                <option value="">All Departments</option>
+                                <option th:each="dept : ${departments}"
+                                        th:value="${dept.name}"
+                                        th:attr="data-id=${dept.id}"
+                                        th:text="${dept.name}"
+                                        th:selected="${dept.name == selectedDepartment}"></option>
+                            </select>
+						</div>
+						<div class="mb-2">
+							<label for="batch" class="form-label">Batch</label>
+							<select name="batch" id="batch" class="form-select">
+								<option value="">All Batches</option>
+								<option th:each="batch : ${batches}" th:value="${batch.name}" th:text="${batch.name}"
+									th:selected="${batch.name == selectedBatch}"></option>
+							</select>
+						</div>
+						<div class="mb-2">
+							<label for="section" class="form-label">Section</label>
+							<select name="section" id="section" class="form-select">
+								<option value="">All Sections</option>
+							</select>
+						</div>
+					<script>
+					// Load sections based on selected department (uses option data-id)
+					$(document).ready(function () {
+						function loadSectionsBySelectedDept() {
+							var $dept = $('#department');
+							var departmentId = $dept.find('option:selected').data('id');
+							var $section = $('#section');
+							$section.empty().append('<option value="">All Sections</option>');
+							if (!departmentId) return;
+							$.ajax({
+								url: '/students/sections',
+								type: 'GET',
+								data: { departmentId: departmentId },
+								success: function (sections) {
+									var sectionDropdown = $('#section');
+									sectionDropdown.empty();
+									sectionDropdown.append('<option value="">All Sections</option>');
+									sections.forEach(function (section) {
+										sectionDropdown.append('<option value="' + section.id + '">' + section.sectionName + '</option>');
+									});
+								},
+								error: function (err) {
+									console.error('Error loading sections:', err);
+								}
+							});
+						}
+
+						$('#department').on('change', loadSectionsBySelectedDept);
+						// Initial load
+						loadSectionsBySelectedDept();
+					});
+					</script>
+						<button type="submit" class="btn btn-success w-100">✅ Apply Filter</button>
+					</form>
+				</div>
+			</div>
+
+			<!-- Upload CSV -->
+			<div class="col-md-4 mb-3">
+				<div class="card shadow-card p-3 h-100">
+					<h5 class="mb-3">📁 Upload Students CSV</h5>
+					<form id="uploadForm" th:action="@{/students/upload-csv}" method="post" enctype="multipart/form-data">
+						<input type="file" name="file" accept=".csv" class="form-control mb-2" />
+						<button type="submit" class="btn btn-secondary w-100">⬆️ Upload</button>
+					</form>
+				</div>
+			</div>
+
+		</div>
+
+
+		<!-- Table to display filtered students -->
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover" id="studentsTable">
+				<thead>
+					<tr>
+						<th>S.No</th>
+						<th>Name</th>
+						<th>Roll Number</th>
+						<th>Register Number</th>
+						<th>DOB</th>
+						<th>Department</th>
+						<th>Batch</th>
+						<th>Section</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Initial load of all students -->
+					<tr th:each="student, iterStat : ${studentList}">
+						<td th:text="${iterStat.count}">1</td>
+						<td th:text="${student.name}">Student Name</td>
+						<td th:text="${student.rollNumber}">Roll Number</td>
+						<td th:text="${student.registerNumber}">Register Number</td>
+						<td th:text="${student.dob}">DOB</td>
+						<td th:text="${student.department?.name}">Department</td>
+						<td th:text="${student.batch?.name}">Batch</td>
+						<td th:text="${student.section?.sectionName ?: 'N/A'}">Section</td>
+						<td>
+							<a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-warning btn-sm">Edit</a>
+							<a th:href="@{/students/delete/{id}(id=${student.id})}" class="btn btn-danger btn-sm" onclick="return confirmDelete();">Delete</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+
+	<!-- JavaScript for Search and AJAX Filter -->
+	<script>
+		// Function to handle search in the table
+		function searchTable() {
+			const input = document.getElementById("searchInput").value.toUpperCase();
+			const table = document.querySelector("table");
+			const rows = table.getElementsByTagName("tr");
+
+			for (let i = 1; i < rows.length; i++) {
+				let found = false;
+				const cells = rows[i].getElementsByTagName("td");
+				for (let j = 0; j < cells.length; j++) {
+					if (cells[j] && cells[j].innerText.toUpperCase().includes(input)) {
+						found = true;
+						break;
+					}
+				}
+				rows[i].style.display = found ? "" : "none";
+			}
+		}
+
+		// AJAX function to load students based on selected filters
+		$(document).ready(function () {
+			// Handle form submit
+			$('#filterForm').on('submit', function (event) {
+				event.preventDefault();
+
+                        // Collect filter values
+                        const $dept = $('#department');
+                        const department = $dept.val();
+                        const departmentId = $dept.find('option:selected').data('id');
+                        const batch = $('#batch').val();
+
+				// Perform AJAX request to fetch filtered students
+				const section = $('#section').val();
+                $.ajax({
+                    url: `/students/filter`, // URL should be configured to handle the filter request
+                    type: 'GET',
+                    dataType: 'text',
+                    data: {
+                        department: department,
+                        departmentId: departmentId,
+                        batch: batch,
+                        section: section
+                    },
+                    success: function (data) {
+                        try {
+                            if (typeof data === 'string') {
+                                // Some servers wrap JSON as string; unescape once
+                                data = data.replace(/^"|"$/g, '');
+                                data = data.replace(/\\"/g, '"');
+                                data = data.replace(/\\n/g, '\n');
+                                data = JSON.parse(data);
+                            }
+                        } catch (e) {
+                            console.error('Failed to parse response JSON', e, data);
+                            return;
+                        }
+                        // Update table rows with the fetched data
+                        const studentsTableBody = $('#studentsTable tbody');
+                        studentsTableBody.empty(); // Clear existing rows
+
+                        // Normalize response: backend may return { students: [...] } or just [...]
+                        const students = Array.isArray(data)
+                            ? data
+                            : (data && Array.isArray(data.students) ? data.students : []);
+
+                        if (!students || !Array.isArray(students) || students.length === 0) {
+                            studentsTableBody.append('<tr><td colspan="9" class="text-center">No records found.</td></tr>');
+                            return;
+                        }
+
+                        // Sort students by rollNumber with alphabets at the end
+                        students.sort(function(a, b) {
+                            const aRoll = a && a.rollNumber ? String(a.rollNumber) : '';
+                            const bRoll = b && b.rollNumber ? String(b.rollNumber) : '';
+                            const aIsNumeric = /^\d+$/.test(aRoll);
+                            const bIsNumeric = /^\d+$/.test(bRoll);
+                            if (aIsNumeric && bIsNumeric) {
+                                return parseInt(aRoll) - parseInt(bRoll);
+                            } else if (aIsNumeric && !bIsNumeric) {
+                                return -1;
+                            } else if (!aIsNumeric && bIsNumeric) {
+                                return 1;
+                            } else {
+                                return aRoll.localeCompare(bRoll);
+                            }
+                        });
+
+                        students.forEach((student, index) => {
+                            studentsTableBody.append(`
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${student.name ?? ''}</td>
+                                <td>${student.rollNumber ?? ''}</td>
+                                <td>${student.registerNumber ?? ''}</td>
+                                <td>${student.dob ?? ''}</td>
+                                <td>${student.department && student.department.name ? student.department.name : ''}</td>
+                                <td>${student.batch && student.batch.name ? student.batch.name : ''}</td>
+                                <td>${student.section && student.section.sectionName ? student.section.sectionName : 'N/A'}</td>
+                                <td>
+                                    <a href="/students/edit/${student.id}" class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="/students/delete/${student.id}" class="btn btn-danger btn-sm" onclick="return confirmDelete();">Delete</a>
+                                </td>
+                            </tr>
+                        `);
+                        });
+                    },
+                    error: function (err) { console.error('Error loading filtered students:', err); }
+				});
+			});
+		});
+	</script>
+
+	<script>
+		function confirmDelete() {
+			return confirm('Are you sure you want to delete? This action cannot be undone.');
+		}
+	</script>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+	<script>
+		function exportTableToExcel() {
+			const table = document.getElementById("studentsTable");
+
+			// Create a worksheet
+			const wb = XLSX.utils.book_new();
+			const ws = XLSX.utils.table_to_sheet(table);
+
+			// Add the worksheet to the workbook
+			XLSX.utils.book_append_sheet(wb, ws, "Students");
+
+			// Save the Excel file
+			XLSX.writeFile(wb, "Student_List.xlsx");
+		}
+	</script>
+
+
+</body>
+
+</html>

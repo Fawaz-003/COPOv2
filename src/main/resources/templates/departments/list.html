@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Departments</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap CDN -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+	<div th:replace="~{/navbar :: navbar}"></div>
+
+	<!-- Flash Messages -->
+	<div class="mt-3">
+		<div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+		<div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+	</div>
+
+
+	<div class="container mt-5">
+		<h1 class="text-center">Department List</h1>
+
+		<!-- Add New Faculty + Search -->
+		<div class="col-md-6 mb-3">
+			<div class="card shadow-card p-3 h-100">
+				<h5 class="mb-3">Department Actions</h5>
+				<a href="/departments/new" class="btn btn-primary mb-3">Add New Department</a>
+				<a>Search</a>
+				<input type="text" id="searchInput" class="form-control" placeholder="🔍 Search..."
+					onkeyup="searchTable()">
+			</div>
+		</div>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Sections</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="department : ${departments}">
+					<td th:text="${department.id}"></td>
+					<td th:text="${department.name}"></td>
+					<td th:text="${department.description}"></td>
+					<td>
+						<span th:each="sec : ${department.sections}" class="badge bg-secondary me-1" th:text="${sec.sectionName}"></span>
+					</td>
+					<td>
+						<a th:href="@{/departments/edit/{id}(id=${department.id})}" class="btn btn-warning">Edit</a>
+						<a th:href="@{/departments/delete/{id}(id=${department.id})}" class="btn btn-danger"
+							onclick="return confirmDelete();">Delete</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<script>
+		function confirmDelete() {
+			return confirm('Are you sure you want to delete? This action cannot be undone.');
+		}
+	</script>
+
+	<!-- JavaScript for searching.... -->
+	<script>
+
+
+		function searchTable() {
+			const input = document.getElementById("searchInput").value.toUpperCase();
+			const table = document.querySelector("table");
+			if (!table) return; // Avoid error if table is not present
+			const rows = table.getElementsByTagName("tr");
+
+			for (let i = 1; i < rows.length; i++) {
+				let found = false;
+				const cells = rows[i].getElementsByTagName("td");
+				for (let j = 0; j < cells.length; j++) {
+					const cell = cells[j];
+					if (cell && cell.textContent.toUpperCase().includes(input)) {
+						found = true;
+						break;
+					}
+				}
+				rows[i].style.display = found ? "" : "none";
+			}
+		}
+
+
+	</script>
+</body>
+
+</html>

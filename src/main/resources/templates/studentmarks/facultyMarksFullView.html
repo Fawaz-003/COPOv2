@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Faculty Full Marks View</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap CDN -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- jQuery CDN -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<style>
+		.dashboard-title {
+			background: linear-gradient(to right, #6495ED, #6610f2);
+			color: white;
+			padding: 10px 20px;
+			border-radius: 8px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		/* Table Styles */
+		.table-bordered> :not(caption)>*>* {
+			border: 2px solid #343a40 !important;
+		}
+
+		table thead th {
+			background-color: #6495ED;
+			color: white;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		table td {
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		table tbody tr:hover {
+			background-color: #f1f1f1;
+		}
+
+		.table-responsive {
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.table {
+			border-collapse: collapse;
+			border: 2px solid #2F4F4F;
+			font-size: 14px;
+		}
+
+		.table th,
+		.table td {
+			border: 1px solid #2F4F4F !important;
+			padding: 8px;
+		}
+
+		.table thead th {
+			background-color: #6495ED;
+			font-weight: bold;
+			border-bottom: 2px solid #ced4da;
+		}
+
+		.table tbody tr:hover {
+			background-color: #f9f9f9;
+		}
+
+		.table-wrapper {
+			width: 100vw;
+			height: 100vh;
+			padding: 10px;
+			background-color: #fff;
+		}
+
+		.table-scroll {
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+		}
+
+		table {
+			width: max-content;
+			min-width: 100%;
+			border-collapse: collapse;
+		}
+
+		th,
+		td {
+			white-space: nowrap;
+			padding: 8px 16px;
+			text-align: center;
+			border: 1px solid #dee2e6;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #f1f1f1;
+			z-index: 2;
+		}
+
+		.scroll-wrapper {
+			overflow-x: auto;
+			overflow-y: auto;
+			max-height: 500px;
+			/* You can adjust this height */
+			border: 1px solid #ccc;
+		}
+
+		.table th,
+		.table td {
+			white-space: nowrap;
+			/* Keeps cells from wrapping */
+			vertical-align: middle;
+		}
+	</style>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+
+</head>
+
+<body>
+	<div th:replace="~{/navbar :: navbar}"></div>
+
+	<div class="container-fluid mt-4">
+		<h2 class="dashboard-title">Faculty Full Marks View (Grouped by CO & Exam Type)</h2>
+
+
+
+		<div class="card shadow-card p-3 h-100">
+			<form id="filterForm">
+				<div class="row mb-3">
+					<div class="row">
+						<div class="col-md-6">
+							<label class="form-label">Department:</label>
+							<select name="department" id="department" class="form-select">
+								<option value="">All Departments</option>
+								<option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"
+									th:selected="${dept.name == selectedDepartment}"></option>
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Batch:</label>
+							<select name="batch" id="batch" class="form-select">
+								<option value="">All Batches</option>
+								<option th:each="batch : ${batches}" th:value="${batch.id}" th:text="${batch.name}"
+									th:selected="${batch.name == selectedBatch}"></option>
+							</select>
+						</div>
+					</div>
+					<div class="row mt-3">
+						<div class="col-md-4">
+							<label class="form-label">Semester:</label>
+							<select class="form-control" id="semester">
+								<option value="">-- Select Semester --</option>
+								<option th:each="s : ${#numbers.sequence(1,8)}" th:value="${s}" th:text="${s}"></option>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label class="form-label">Subject:</label>
+							<select class="form-control" id="subject" disabled>
+								<option value="">-- Select Subject --</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="mt-3">
+						<button type="button" class="btn btn-primary" id="viewMarksBtn">View Marks</button>
+					</div>
+			</form>
+
+			<!-- Add New Faculty + Search -->
+			<div class="col-md-6 mb-3">
+				<div class="card shadow-card p-3 h-100">
+					<h5 class="mb-3">Search....</h5>
+
+					<input type="text" id="searchInput" class="form-control" placeholder="🔍 Search..."
+						onkeyup="searchTable()">
+				</div>
+			</div>
+
+		</div>
+
+		<div id="marksContainer" class="mt-4"></div>
+		<div class="mt-3">
+			<button class="btn btn-success me-2" onclick="exportToExcel()">Export to Excel</button>
+			<button class="btn btn-danger" onclick="exportToPDF2()">Export to PDF</button>
+		</div>
+
+	</div>
+
+	<!-- JavaScript for searching.... -->
+	<script>
+
+
+		function searchTable() {
+			const input = document.getElementById("searchInput").value.toUpperCase();
+			const table = document.querySelector("table");
+			const rows = table.getElementsByTagName("tr");
+
+			for (let i = 1; i < rows.length; i++) {
+				let found = false;
+				const cells = rows[i].getElementsByTagName("td");
+				for (let j = 0; j < cells.length; j++) {
+					if (cells[j] && cells[j].innerText.toUpperCase().includes(input)) {
+						found = true;
+						break;
+					}
+				}
+				rows[i].style.display = found ? "" : "none";
+			}
+		}
+
+	</script>
+	<script>
+		// Load subjects based on department and semester
+		$('#department, #semester').on('change', function () {
+			const department = $('#department').val();
+			const semester = $('#semester').val();
+
+			if (department && semester) {
+				$.ajax({
+					url: '/faculty-marks/by-dept-sem',
+					method: 'GET',
+					data: {department: department, semester: semester},
+					success: function (subjects) {
+						const subjectSelect = $('#subject');
+						subjectSelect.empty().append('<option value="">Select Subject</option>');
+
+						if (subjects.length > 0) {
+							subjects.forEach(sub => {
+								subjectSelect.append(`<option value="${sub.id}">${sub.name}</option>`);
+							});
+						} else {
+							subjectSelect.append('<option disabled>No subjects found</option>');
+						}
+
+						subjectSelect.prop('disabled', false);
+					},
+					error: function () {
+						alert("Failed to load subjects.");
+					}
+				});
+			} else {
+				$('#subject').empty().append('<option value="">Select Subject</option>').prop('disabled', true);
+			}
+		});
+
+
+		$(document).ready(function () {
+			$('#viewMarksBtn').click(function () {
+				const department = $('#department').val();
+				const batch = $('#batch').val();
+				const semester = $('#semester').val();
+				const subject = $('#subject').val();
+
+				if (!department || !batch || !semester || !subject) {
+					alert("Please select all filters.");
+					return;
+				}
+
+				$.get(`/faculty-marks/view-marks-full?departmentId=${department}&batchId=${batch}&semester=${semester}&subjectId=${subject}`, function (data) {
+					if (!data || !data.groupedQuestions) {
+						$('#marksContainer').html('<p>No data available for the selected filters.</p>');
+						return;
+					}
+
+
+					html = `
+					  <div class="mt-4 d-flex justify-content-center">
+					    <div class="scroll-wrapper" style="max-height: 500px; overflow: auto; width: 100%;">
+					      <table class="table table-bordered table-hover align-middle text-center">
+					`;
+
+
+
+					//html = '<div class="container-fluid mt-4"><div class="table-wrapper"><div class="table-scroll"><table class="table table-bordered table-hover align-middle">';
+
+					//let html = '<div class="table-responsive"><table class="table table-bordered table-hover align-middle">';
+
+
+					//let html = '<div class="table-responsive"><table class="table table-bordered">';
+
+					// Header Row 1 - COs
+					html += '<thead><tr><th rowspan="3">Roll No</th><th rowspan="3">Student Name</th>';
+					for (const co in data.groupedQuestions) {
+						let colspan = 0;
+						const examTypeMap = data.groupedQuestions[co];
+						for (const examType in examTypeMap) {
+							colspan += examTypeMap[examType].questions.length;
+						}
+						html += `<th colspan="${colspan}">${co}</th>`;
+					}
+					html += '</tr>';
+
+					// Header Row 2 - Exam Types
+					html += '<tr>';
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+							html += `<th colspan="${questions.length}">${examType}</th>`;
+						}
+					}
+					html += '</tr>';
+
+					// Header Row 3 - Questions
+					html += '<tr>';
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+							questions.forEach(q => {
+								html += `<th>${q.part} - ${q.questionNumber}</th>`;
+							});
+						}
+					}
+					html += '</tr></thead><tbody>';
+
+					// Student Data Rows
+					data.students.forEach(student => {
+						html += `<tr><td>${student.rollNumber}</td><td>${student.name}</td>`;
+						for (const co in data.groupedQuestions) {
+							const examTypeMap = data.groupedQuestions[co];
+							for (const examType in examTypeMap) {
+								const questions = examTypeMap[examType].questions;
+								questions.forEach(q => {
+									const mark = (((student.marks || {})[co] || {})[examType] || {})[`Part ${q.part} - Q${q.questionNumber}`] || '';
+									html += `<td>${mark}</td>`;
+								});
+							}
+						}
+						html += '</tr>';
+					});
+
+					// Max Marks Row
+					html += '<tr><td colspan="2"><strong>Max Marks</strong></td>';
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+							questions.forEach(q => {
+								html += `<td><strong>${q.maxMarks}</strong></td>`;
+							});
+						}
+					}
+					html += '</tr>';
+
+					// Assuming `data` contains the response from the backend
+					const questionStats = data.questionStats;
+
+
+					// >=50% Count Row
+					html += '<tr><td colspan="2"><strong>Marks Scored more than 50 Percentage</strong></td>';
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+							questions.forEach(q => {
+								const key = `Part ${q.part} - Q${q.questionNumber}`;
+								const count50Percent = questionStats[co]?.[examType]?.[key]?.['>=50%'] ?? 0;
+								html += `<td><strong>${count50Percent}</strong></td>`;
+							});
+						}
+					}
+					html += '</tr>';
+
+					// Attempted Row
+					html += '<tr><td colspan="2"><strong>Students attempted </strong></td>';
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+							questions.forEach(q => {
+								const key = `Part ${q.part} - Q${q.questionNumber}`;
+								const attemptedCount = questionStats[co]?.[examType]?.[key]?.['attempted'] ?? 0;
+								html += `<td><strong>${attemptedCount}</strong></td>`;
+							});
+						}
+					}
+					html += '</tr>';
+
+
+
+					// Assessment-wise % Row
+					html += '<tr><td colspan="2"><strong>Assessment Eventwise(%)</strong></td>';
+
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+							const colspan = questions.length;
+
+							const percentage =
+								data.assessmentPercentages &&
+									data.assessmentPercentages[co] &&
+									data.assessmentPercentages[co][examType]
+									? data.assessmentPercentages[co][examType]
+									: 0;
+
+							html += `<td colspan="${colspan}" style="text-align:center;"><strong>${Math.floor(percentage)}</strong></td>`;
+						}
+					}
+
+					html += '</tr>';
+
+
+					// Assessment Questionswise (%)
+					html += '<tr><td colspan="2"><strong>Assessment Questionswise(%)</strong></td>';
+
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+
+							questions.forEach(q => {
+								const key = `Part ${q.part} - Q${q.questionNumber}`; // Matches backend keys
+
+								const percentage =
+									data.questionWisePercentages &&
+										data.questionWisePercentages[co] &&
+										data.questionWisePercentages[co][examType] &&
+										data.questionWisePercentages[co][examType][key]
+										? data.questionWisePercentages[co][examType][key]
+										: 0;
+
+								html += `<td><strong>${Math.floor(percentage)}</strong></td>`;
+							});
+						}
+					}
+
+					html += '</tr>';
+
+
+
+
+					// CO-wise Avg Questionswise (%)
+					html += '<tr><td colspan="2"><strong>Overall Percentage</strong></td>';
+
+					for (const co in data.groupedQuestions) {
+						const examTypeMap = data.groupedQuestions[co];
+
+						let questionCount = 0;
+
+						for (const examType in examTypeMap) {
+							const questions = examTypeMap[examType].questions;
+							questionCount += questions.length;
+						}
+
+						const avg =
+							data.averageQuestionWisePercentages &&
+								data.averageQuestionWisePercentages[co]
+								? data.averageQuestionWisePercentages[co]
+								: 0;
+
+						for (let i = 0; i < questionCount; i++) {
+							if (i === 0) {
+								html += `<td colspan="${questionCount}"><strong>${Math.floor(avg)}</strong></td>`;
+							}
+						}
+					}
+
+					html += '</tr>';
+
+
+
+					html += '</tbody></table></div></div>';
+					$('#marksContainer').html(`<div id="pdfExportContainer">${html}</div>`);
+
+					//$('#marksContainer').html(html);
+
+				}).fail(function () {
+					alert("Error fetching marks data.");
+				});
+			});
+		});
+
+
+
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+	<script>
+		function exportToExcel() {
+			// Clone the table so we don’t affect the live DOM
+			let table = document.querySelector("#marksContainer table").cloneNode(true);
+
+			// Fix % cells: Convert 83.3 into "83.3%" string
+			Array.from(table.querySelectorAll("td")).forEach(td => {
+				let text = td.textContent.trim();
+				// Match decimal numbers likely to be percentages
+				if (!isNaN(text) && text.includes('.') && Number(text) <= 100 && Number(text) >= 0) {
+					let parsed = parseFloat(text);
+					if (parsed % 1 !== 0) {
+						td.textContent = parsed.toFixed(1) + '%'; // keep one decimal
+					}
+				}
+			});
+
+			let wb = XLSX.utils.table_to_book(table, {sheet: "Marks Data"});
+			XLSX.writeFile(wb, "CourseOutcome.xlsx");
+		}
+
+
+
+
+	</script>
+
+
+	<!-- jsPDF and AutoTable (UMD modules) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+	<script>
+		async function exportToPDF2() {
+		  const { jsPDF } = window.jspdf;
+		  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a2' });
+
+		  const table = document.querySelector("#marksContainer table");
+		  if (!table) {
+		    alert("Table not found!");
+		    return;
+		  }
+
+		  const department = document.querySelector('#department option:checked')?.text || 'N/A';
+		  const batch = document.querySelector('#batch option:checked')?.text || 'N/A';
+		  const semester = document.querySelector('#semester option:checked')?.text || 'N/A';
+		  const subject = document.querySelector('#subject option:checked')?.text || 'N/A';
+
+		  // Helper to load image as promise
+		  function loadImage(src) {
+		    return new Promise((resolve, reject) => {
+		      const img = new Image();
+		      img.src = src;
+		      img.onload = () => resolve(img);
+		      img.onerror = reject;
+		    });
+		  }
+
+		  try {
+		    const logoImgLeft = await loadImage('/images/collegeLogo.png');
+		    const logoImgRight = await loadImage('/images/nbaLogo1.jpeg');  // your second image path
+
+		    // Add left logo
+		    doc.addImage(logoImgLeft, 'JPEG', 20, 20, 100, 100);
+
+		    // Add right logo
+		    const pageWidth = doc.internal.pageSize.getWidth();
+		    const rightLogoWidth = 150;
+		    const rightLogoHeight = 150;
+		    const rightLogoX = pageWidth - rightLogoWidth - 20;  // 20pt margin from right
+		    const rightLogoY = 20;
+		    doc.addImage(logoImgRight, 'JPEG', rightLogoX, rightLogoY, rightLogoWidth, rightLogoHeight);
+
+		  } catch {
+		    console.warn("One or both logo images failed to load; continuing without logos");
+		  }
+
+		  // Header text - start a bit to the right of left logo and avoid overlap with right logo
+		  const headerStartX = 130;
+		  const headerEndX = doc.internal.pageSize.getWidth() - 130;
+
+		  doc.setFontSize(18);
+		  doc.setFont('helvetica', 'bold');
+		  doc.text('C. ABDUL HAKEEM COLLEGE OF ENGINEERING AND TECHNOLOGY, MELVISHARAM', headerStartX, 50, { maxWidth: headerEndX - headerStartX });
+
+		  doc.setFontSize(12);
+		  doc.setFont('helvetica', 'normal');
+		  doc.text(`Department: ${department}`, headerStartX, 75);
+		  doc.text(`Batch: ${batch}`, headerStartX, 95);
+		  doc.text(`Semester: ${semester}`, headerStartX, 115);
+		  doc.text(`Subject: ${subject}`, headerStartX, 135);
+
+		  doc.setFontSize(14);
+		  doc.setFont('helvetica', 'bold');
+		  doc.text('Course Outcome', headerStartX, 165);
+
+		  doc.autoTable({
+		    html: table,
+		    startY: 180,
+		    margin: { left: 20, right: 20, bottom: 40 },
+		    styles: {
+		      fontSize: 11,
+		      halign: 'center',
+		      valign: 'middle',
+		      lineWidth: 0.2,
+		      lineColor: [0, 0, 0],
+		    },
+		    headStyles: {
+		      fillColor: [100, 149, 237],
+		      textColor: 255,
+		      fontStyle: 'bold',
+		      lineWidth: 0.3,
+		      lineColor: [0, 0, 0],
+		    },
+		    didDrawPage: (data) => {
+		      const pageCount = doc.getNumberOfPages();
+		      const pageCurrent = doc.getCurrentPageInfo().pageNumber;
+		      const pageWidth = doc.internal.pageSize.getWidth();
+		      const pageHeight = doc.internal.pageSize.getHeight();
+
+		      doc.setFontSize(9);
+		      doc.setTextColor(100);
+		      doc.text(`Page ${pageCurrent} of ${pageCount}`, pageWidth - 80, pageHeight - 10);
+
+		      const now = new Date();
+		      doc.text(`Generated on: ${now.toLocaleString()}`, 20, pageHeight - 10);
+		    }
+		  });
+
+		  doc.save('FacultyFullMarksView.pdf');
+		}
+
+	</script>
+
+
+	<!-- jsPDF and AutoTable -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+
+
+
+</body>
+
+</html>

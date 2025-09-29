@@ -1,0 +1,413 @@
+ELECTIVE TESTING 1, AA0001,,3
+ELECTIVE TESTING, AA0002,MBA,3
+SDN, AA0005,MCA,4
+Data Structures Design, AD3251,AIDS,2
+Data Structures Design Laboratory, AD3271,AIDS,2
+DATASCIENCE AND ANALYTICS LAB, AD3411,AIDS,4
+MACHINE LEARNING LAB, AD3461,AIDS,4
+FUNDAMENTAL OF DATASCIENCE AND ANALYTICS, AD3491,AIDS,4
+Engineering Geology, AG3601,CIVIL,6
+IT in Agricultural System, AI3021,CSE,7
+IT in Agricultural System, AI3021,IT,7
+HYDROLOGY AND WATER RESOURCES ENGINEERING, AI3404,CIVIL,7
+MACHINE LEARNING, AL3451,AIDS,4
+OPERATING SYSTEM, AL3452,AIDS,4
+Security Analysis and Portfolio Management, BA4001,MBA,3
+Financial Markets, BA4002,MBA,3
+Banking and financial service, BA4003,MBA,3
+Consumer Behavior, BA4009,MBA,3
+Services Marketing, BA4011,MBA,3
+Product and Brand Management, BA4013,MBA,3
+Strategic Human Resource Management, BA4015,MBA,3
+Industrial relations and labour legislations, BA4016,MBA,3
+Negotiation and conflict management, BA4018,MBA,3
+Entrepreneurship Development, BA4032,MBA,1
+Statistics for Management, BA4101,MBA,1
+Management Concepts and Organizational Behavior, BA4102,MBA,1
+Managerial Economics, BA4103,MBA,1
+Accounting for Decision Making, BA4104,MBA,1
+Legal Aspects of Business, BA4105,MBA,1
+Information Management, BA4106,MBA,1
+Indian Ethics, BA4111,MBA,1
+Business Communication, BA4112,MBA,1
+Quantitative Techniques for Decision Making, BA4201,MBA,2
+Financial Management, BA4202,MBA,2
+Human Resource Management, BA4203,MBA,2
+Operations Management, BA4204,MBA,2
+Business Research Methods, BA4205,MBA,2
+Business Analytics, BA4206,MBA,2
+Marketing Management, BA4207,MBA,2
+Business ethics (Seminar, BA4211,MBA,2
+Data analysis and Business Modelling (Laboratory, BA4212,MBA,2
+Strategic Management, BA4301,MBA,3
+International Business, BA4302,MBA,3
+Creativity and Innovation Laboratory, BA4311,MBA,3
+Project Work, BA4411,MBA,3
+Project Work, BA4411,MBA,4
+Basic Electrical and Electronics Engineering, BE3251,AIDS,2
+Basic Electrical and Electronics Engineering, BE3251,CSE,2
+Basic Electrical and Electronics Engineering, BE3251,IT,2
+Basic Electrical and Electronics Engineering, BE3251,MECH,2
+Basic Electrical and Instrumentation Engineering, BE3252,CIVIL,2
+ELECTRICAL AND INSTRUMENTATION ENGINEERING, BE3254,ECE,2
+Basic Civil and Mechanical Engineering, BE3255,EEE,2
+Basic Electrical and Electronics Engineering Laboratory, BE3271,MECH,2
+Basic Electrical and Instrumentation Laboratory, BE3272,CIVIL,2
+PHYSICS AND CHEMISTRY LABORATORY, BS3171,CIVIL,1
+Physics and Chemistry Laboratory, BS3171,CSE,1
+PHYSICS AND CHEMISTRY LABORATORY, BS3171,ECE,1
+Physics and Chemistry Laboratory, BS3171,IT,1
+Data Structures and Algorithms, BX4001,MCA,1
+Problem Solving and Programming in C, BX4002,MCA,1
+Introduction to Computer Organization and Operating Systems, BX4003,MCA,2
+Database Management Systems, BX4004,MCA,2
+Mathematical Foundations of Computer Science, BX4005,MCA,3
+Basics of Computer Networks, BX4006,MCA,3
+Cryptography and Cyber Security, CB3491,CSE,5
+Industrial Waste Water Management, CCE334,CIVIL,6
+AIR AND NOISE POLLUTION CONTROL ENGINEERING, CCE3351,CIVIL,5
+Big Data Analytics, CCS334,CSE,5
+Big Data Analytics, CCS334,CSE,6
+Cloud Computing, CCS335,CSE,5
+Cloud Computing, CCS335,IT,5
+Cloud Services Management, CCS336,IT,6
+COMPUTER VISION, CCS338,ECE,6
+Data Warehousing, CCS341,CSE,6
+DevOps, CCS342,IT,6
+NETWORK SECURITY, CCS354,AIDS,6
+Network Security, CCS354,CSE,6
+NEURAL NETWORK AND DEEPLEARNING, CCS355,AIDS,6
+Object Oriented Software Engineering, CCS356,CSE,6
+Object Oriented Software Engineering, CCS356,IT,6
+Principles of Programming Language, CCS358,IT,5
+Software Testing And Automation, CCS366,CSE,5
+SOFTWARE TESTING AND AUTOMATION, CCS366,AIDS,6
+Software Testing And Automation, CCS366,IT,6
+UI and UX Design, CCS370,CSE,6
+UI and UX Design, CCS370,IT,6
+Virtualization, CCS372,AIDS,6
+Virtualization, CCS372,CSE,6
+Web Application Security, CCS374,IT,6
+Web Technologies, CCS375,CSE,5
+Business Analytics, CCW341,CSE,6
+Data Structures and Algorithm Laboratory, CD3281,IT,3
+Data Structures and Algorithm, CD3291,IT,3
+PREFABRICATED STRUCTURES, CE3003,CIVIL,5
+Rehabilitation & Heritage Restoration, CE3005,CIVIL,6
+Advanced Construction Techniques, CE3013,CIVIL,6
+AIRPORTS AND HARBORS, CE3025,CIVIL,5
+FLUID MECHANICS, CE3301,CIVIL,3
+CONSTRUCTION MATERIALS AND TECHNOLOGY, CE3302,CIVIL,3
+WATER SUPPLY AND WASTE WATER ENGINEERING, CE3303,CIVIL,3
+WATER AND WASTE WATER ANALYSIS LABORATORY, CE3311,CIVIL,3
+SURVEYING AND LEVELLING, CE3351,CIVIL,3
+SURVEYING AND LEVELING LABORATORY, CE3361,CIVIL,3
+Fluid Mechanics and Machinery, CE3391,MECH,3
+Applied Hydraulics Engineering, CE3401,CIVIL,4
+Strength of Materials, CE3402,CIVIL,4
+Concrete Technology, CE3403,CIVIL,4
+Soil Mechanics, CE3404,CIVIL,4
+Highway And Railway Engineering, CE3405,CIVIL,4
+Hydraulic Engineering Laboratory, CE3411,CIVIL,4
+Material Testing Laboratory, CE3412,CIVIL,4
+Soil Mechanics Laboratory, CE3413,CIVIL,4
+Strength of Materials and Fluid Machinery Laboratory, CE3481,MECH,4
+Strength of Materials, CE3491,MECH,4
+DESIGN OF REINFORCED CEMENT CONCRETE ELEMENTS, CE3501,CIVIL,5
+FOUNDATION ENGINEERING, CE3503,CIVIL,5
+HIGHWAY ENGINEERING LABORATORY, CE3511,CIVIL,5
+Design of Steel Structural Elements, CE3601,CIVIL,6
+Structural Analysis-II, CE3602,CIVIL,6
+Building Drawing And Detailing Laboratory, CE3611,CIVIL,6
+PROJECT WORK/ INTERNSHIP TRAINING, CE3811,CIVIL,8
+4G/5G COMMUNICATION NETWORKS, CEC331,ECE,6
+EMI/EMC PRE COMPLIANCE TESTING, CEC338,ECE,6
+OPTICAL COMMUNICATION & NETWORKS, CEC345,ECE,5
+SATELLITE COMMUNICATION, CEC352,ECE,5
+IMAGE PROCESSING, CEC366,ECE,5
+Material Handling and Solid Processing Equipment, CME355,MECH,6
+Renewable Energy Technologies (PE I, CME365,MECH,5
+Renewable Energy Technologies, CME365,CSE,7
+Renewable Energy Technologies, CME365,IT,7
+Automobile Engineering (PE II, CME380,MECH,5
+Non-Traditional Machining Processes (PE-III, CME387,MECH,5
+Power Generation Equipment Design, CME392,MECH,6
+Process Planning and Cost Estimation, CME396,MECH,6
+Surface Engineering, CME397,MECH,6
+Programming in C, CS3251,CSE,2
+Programming in C, CS3251,IT,2
+Programming in C Laboratory, CS3271,CSE,2
+Programming in C Laboratory, CS3271,IT,2
+Data Structures, CS3301,CSE,3
+Data Structures Laboratory, CS3311,CSE,3
+Digital Principles and Computer Organization, CS3351,CSE,3
+Digital Principles and Computer Organization, CS3351,IT,3
+Foundations of Data Science, CS3352,CSE,3
+Foundations of Data Science, CS3352,IT,3
+C PROGRAMMING AND DATA STRUCTURES, CS3353,ECE,3
+C PROGRAMMING AND DATA STRUCTURES, CS3354,EEE,3
+Data Science Laboratory, CS3361,CSE,3
+Data Science Laboratory, CS3361,IT,3
+C PROGRAMMING AND DATA STRUCTURES LABORATORY, CS3362,ECE,3
+Object Oriented Programming Laboratory, CS3381,CSE,3
+Object Oriented Programming Laboratory, CS3381,IT,3
+Object Oriented Programming, CS3391,CSE,3
+Object Oriented Programming, CS3391,IT,3
+Algorithms, CS3401,CSE,4
+Introduction to Operating Systems, CS3451,CSE,4
+Introduction to Operating Systems, CS3451,IT,4
+Theory of Computation, CS3452,CSE,4
+Theory of Computation, CS3452,IT,4
+Operating Systems Laboratory, CS3461,CSE,4
+Operating Systems Laboratory, CS3461,IT,4
+Database Management Systems Laboratory, CS3481,CSE,4
+Database Management Systems Laboratory, CS3481,IT,4
+Artificial Intelligence and Machine Learning, CS3491,CSE,4
+Artificial Intelligence and Machine Learning, CS3491,IT,4
+Artificial Intelligence and Machine Learning, CS3491,ECE,6
+Database Management Systems, CS3492,CSE,4
+Database Management Systems, CS3492,IT,4
+Compiler Design, CS3501,CSE,5
+Distributed Computing, CS3551,AIDS,5
+Distributed Computing, CS3551,CSE,5
+Distributed Computing, CS3551,IT,5
+Computer Networks, CS3591,AIDS,4
+Computer Networks, CS3591,CSE,5
+Computer Networks, CS3591,IT,5
+Embedded Systems and IoT, CS3691,IT,5
+Embedded Systems and IoT, CS3691,AIDS,6
+Embedded Systems and IoT, CS3691,CSE,6
+Summer Internship, CS3711,CSE,7
+Project Work/Internship, CS3811,CSE,8
+ENGINEERING CHEMISTRY, CY3151,CIVIL,1
+Engineering Chemistry, CY3151,CSE,1
+ENGINEERING CHEMISTRY, CY3151,ECE,1
+Engineering Chemistry, CY3151,IT,1
+CIRCUIT ANALYSIS, EC3251,ECE,2
+CIRCUITS ANALYSIS LABORATORY, EC3271,ECE,2
+ELECTRON DEVICES AND CIRCUITS, EC3301,EEE,3
+CONTROL SYSTEMS, EC3351,ECE,3
+DIGITAL SYSTEMS DESIGN, EC3352,ECE,3
+ELECTRONIC DEVICES AND CIRCUITS, EC3353,ECE,3
+SIGNALS AND SYSTEMS, EC3354,ECE,3
+ELECTRONIC DEVICES AND CIRCUITS LABORATORY, EC3361,ECE,3
+NETWORKS AND SECURITY, EC3401,ECE,4
+LINEAR INTEGRATED CIRCUITS, EC3451,ECE,4
+ELECTROMAGNETIC FIELDS, EC3452,ECE,4
+COMMUNICATION SYSTEMS LABORATORY, EC3461,ECE,4
+LINEAR INTEGRATED CIRCUITS LABORATORY, EC3462,ECE,4
+COMMUNICATION SYSTEMS, EC3491,ECE,4
+DIGITAL SIGNAL PROCESSING, EC3492,ECE,4
+WIRELESS COMMUNICATION, EC3501,ECE,5
+TRANSMISSION LINES AND RF SYSTEMS, EC3551,ECE,5
+VLSI AND CHIP DESIGN, EC3552,ECE,5
+PROJECT WORK / INTERNSHIP, EC3811,ECE,8
+UTILIZATION AND CONSERVATION OF ELECTRICAL ENERGY, EE3001,EEE,5
+HVDC AND FACTS, EE3004,EEE,6
+POWER QUALITY, EE3006,EEE,6
+SMART GRID, EE3007,EEE,5
+SPECIAL ELECTRICAL MACHINES, EE3009,EEE,5
+ELECTRICAL DRIVES, EE3012,EEE,5
+EMBEDDED C PROGRAMMING, EE3017,EEE,5
+VLSI, EE3022,EEE,6
+POWER SYSTEM TRANSIENT, EE3037,EEE,6
+Electric Circuit Analysis, EE3251,EEE,2
+Circuit Analysis Laboratory, EE3271,EEE,2
+ELECTROMAGNETIC FIELDS, EE3301,EEE,3
+DIGITAL LOGIC CIRCUITS, EE3302,EEE,3
+ELECTRICAL MACHINES 1, EE3303,EEE,3
+TRANSMISSION AND DISTRIBUTION, EE3401,EEE,4
+LINEAR INTEGRATED CIRCUITS, EE3402,EEE,4
+MEASUREMENTS AND INSTRUMENTATION, EE3403,EEE,4
+MICROPROCESSOR AND MICROCONTROLLER, EE3404,EEE,4
+ELECTRICAL MACHINES II, EE3405,EEE,4
+ELECTRICAL MACHINES LAB II, EE3411,EEE,4
+LINEAR AND DIGITAL CIRCUITS LAB, EE3412,EEE,4
+MICROPROCESSOR AND MICROCONTROLLER LAB, EE3413,EEE,4
+POWER SYSTEM ANALYSIS, EE3501,EEE,5
+CONTROL SYSTEM, EE3503,EEE,5
+POWER ELECTRONICS, EE3591,EEE,5
+PROTECTION AND SWITCHGEAR, EE3601,EEE,6
+POWER SYSTEM OPERATION AND CONTROL, EE3602,EEE,6
+POWER SYSTEM LAB, EE3611,EEE,6
+HIGH VOLTAGE ENGINEERING, EE3701,EEE,7
+Project Work, EE3811,EEE,8
+Embedded Systems and IOT Design, ET3491,ECE,6
+IOT for Smart Systems(Open Elective, ET4251,MCA,3
+PROBLEM SOLVING AND PYTHON PROGRAMMING, GE3151,CIVIL,1
+Problem Solving and Python Programming, GE3151,CSE,1
+PROBLEM SOLVING AND PYTHON PROGRAMMING, GE3151,ECE,1
+Problem Solving and Python Programming, GE3151,IT,1
+HERITAGE OF TAMIL, GE3152,CIVIL,1
+Heritage of Tamils, GE3152,CSE,1
+HERITAGE OF TAMILS, GE3152,ECE,1
+Heritage of Tamils, GE3152,IT,1
+PROBLEM SOLVING AND PYTHON PROGRAMMING LABORATORY, GE3171,CIVIL,1
+Problem Solving and Python Programming Laboratory, GE3171,CSE,1
+PROBLEM SOLVING AND PYTHON PROGRAMMING LABORATORY, GE3171,ECE,1
+Problem Solving and Python Programming Laboratory, GE3171,IT,1
+ENGLISH LABORATORY, GE3172,CIVIL,1
+English Laboratory $, GE3172,CSE,1
+ENGLISH LABORATORY, GE3172,ECE,1
+English Laboratory , GE3172,IT,1
+Engineering Graphics, GE3251,AIDS,2
+Engineering Graphics, GE3251,CIVIL,2
+Engineering Graphics, GE3251,CSE,2
+ENGINEERING GRAPHICS, GE3251,ECE,2
+Engineering Graphics, GE3251,EEE,2
+Engineering Graphics, GE3251,IT,2
+Engineering Graphics, GE3251,MECH,2
+Tamils and Technology, GE3252,AIDS,2
+Tamils and Technology, GE3252,CIVIL,2
+Tamils and Technology, GE3252,CSE,2
+TAMILS AND TECHNOLOGY, GE3252,ECE,2
+Tamils and Technology, GE3252,EEE,2
+Tamils and Technology, GE3252,IT,2
+Tamils and Technology, GE3252,MECH,2
+Engineering Practices Laboratory, GE3271,AIDS,2
+Engineering Practices Laboratory, GE3271,CIVIL,2
+Engineering Practices Laboratory, GE3271,CSE,2
+ENGINEERING PRACTICES LABORATORY, GE3271,ECE,2
+Engineering Practices Laboratory, GE3271,EEE,2
+Engineering Practices Laboratory, GE3271,IT,2
+Engineering Practices Laboratory, GE3271,MECH,2
+Communication Laboratory, GE3272,AIDS,2
+Communication Laboratory, GE3272,CIVIL,2
+Communication Laboratory / Foreign, GE3272,CSE,2
+COMMUNICATION LABORATORY / FOREIGN LANGUAGE, GE3272,ECE,2
+Communication Laboratory, GE3272,EEE,2
+Communication Laboratory / Foreign, GE3272,IT,2
+Communication Laboratory, GE3272,MECH,2
+Professional Development, GE3361,CSE,3
+Professional Development, GE3361,IT,3
+Professional Development, GE3361,MECH,3
+Environmental Sciences and Sustainability, GE3451,AIDS,4
+Environmental Sciences and Sustainability, GE3451,CIVIL,4
+Environmental Sciences and Sustainability, GE3451,CSE,4
+Environmental Sciences and Sustainability, GE3451,ECE,4
+Environmental Sciences and Sustainability, GE3451,EEE,4
+Environmental Sciences and Sustainability, GE3451,IT,4
+Environmental Sciences and Sustainability, GE3451,MECH,4
+PRINCIPLES OF MANAGEMENT, GE3751,ECE,7
+Principles of Management, GE3751,IT,7
+Total Quality Management, GE3752,CIVIL,7
+Total Quality Management, GE3752,CSE,7
+TOTAL QUALITY MANAGEMENT, GE3752,EEE,7
+HUMAN VALUES AND ETHICS, GE3791,CIVIL,7
+Human Values and Ethics, GE3791,CSE,7
+HUMAN VALUES AND ETHICS, GE3791,ECE,7
+PROFESSIONAL ETHICS FOR ENGINEERS, GE3791,EEE,7
+Human Values and Ethics, GE3791,IT,7
+HUMAN VALUES AND ETHICS, GE3791,MECH,7
+INDUSTRIAL MANAGEMENT, GE3792,MECH,7
+Professional English - I, HS3151,IT,1
+PROFESSIONAL ENGLISH I, HS3152,CIVIL,1
+Professional English - I, HS3152,CSE,1
+PROFESSIONAL ENGLISH - I, HS3152,ECE,1
+Professional English - II, HS3251,IT,2
+Professional English II, HS3252,AIDS,2
+Professional English II, HS3252,CIVIL,2
+Professional English II, HS3252,CSE,2
+Professional English II, HS3252,ECE,2
+Professional English II, HS3252,EEE,2
+Professional English II, HS3252,MECH,2
+Web Essentials, IT3401,IT,4
+Full Stack Web Development, IT3501,IT,5
+Full Stack Web Development Laboratory, IT3511,IT,5
+Mobile Application Development Laboratory, IT3681,IT,6
+Summer Internship, IT3711,IT,7
+Project Work/Internship, IT3811,IT,8
+MATRICES AND CALCULUS, MA3151,CIVIL,1
+Matrices and Calculus, MA3151,CSE,1
+MATRICES AND CALCULUS, MA3151,ECE,1
+Matrices and Calculus, MA3151,IT,1
+Statistics and Numerical Methods, MA3251,AIDS,2
+Statistics and Numerical Methods, MA3251,CIVIL,2
+Statistics and Numerical Methods, MA3251,CSE,2
+STATISTICS AND NUMERICAL METHODS, MA3251,ECE,2
+Statistics and Numerical Methods, MA3251,EEE,2
+Statistics and Numerical Methods, MA3251,IT,2
+Statistics and Numerical Methods, MA3251,MECH,2
+PROBABILITY AND COMPLEX FUNCTIONS, MA3303,EEE,3
+TRANSFORMS AND PARTIAL DIFFERENTIAL EQUATIONS, MA3351,CIVIL,3
+Transforms and Partial Differential Equations, MA3351,MECH,3
+Discrete Mathematics, MA3354,CSE,3
+Discrete Mathematics, MA3354,IT,3
+RANDOM PROCESSES AND LINEAR ALGEBRA, MA3355,ECE,3
+PROBABILITY AND STATISTICS, MA3391,AIDS,4
+Applied Probability and Statistics for Computer Science Engineers, MA4151,MCA,1
+Software Project Management(Professional Elective I, MC4001,MCA,2
+Advances in Networking(Professional Elective II, MC4010,MCA,3
+Data Mining and Data Warehousing Techniques(Professional Elective III, MC4020,MCA,3
+Software Quality and Testing(Professional Elective IV , MC4026,MCA,3
+Advanced Data Structures and Algorithms, MC4101,MCA,1
+Object Oriented Software Engineering, MC4102,MCA,1
+Python Programming, MC4103,MCA,1
+Fundamentals of Accounting, MC4104,MCA,1
+Advanced Data Structures and Algorithms Laboratory, MC4111,MCA,1
+Python Programming Laboratory, MC4112,MCA,1
+Communication Skills Enhancement â€“ I, MC4113,MCA,1
+Full Stack Web Development, MC4201,MCA,2
+Advanced Database Technology, MC4202,MCA,2
+Cloud Computing Technologies, MC4203,MCA,2
+Mobile Application Development, MC4204,MCA,2
+Cyber Security, MC4205,MCA,2
+Advanced Database Technology Laboratory, MC4211,MCA,2
+Full Stack Web Development Laboratory, MC4212,MCA,2
+Communication Skills Enhancementâ€“ II, MC4213,MCA,2
+Machine Learning, MC4301,MCA,3
+Internet of Things, MC4302,MCA,3
+Machine Learning Laboratory, MC4311,MCA,3
+Internet of Things Laboratory, MC4312,MCA,3
+Project Work, MC4411,MCA,4
+ENGINEERING MECHANICS, ME3351,CIVIL,3
+Engineering Mechanics, ME3351,MECH,3
+Computer Aided Machine Drawing, ME3381,MECH,3
+Manufacturing Technology Laboratory, ME3382,MECH,3
+Engineering Thermodynamics, ME3391,MECH,3
+Engineering Materials and Metallurgy, ME3392,MECH,3
+Manufacturing Processes, ME3393,MECH,3
+Thermal Engineering, ME3451,MECH,4
+Thermal Engineering Laboratory, ME3461,MECH,4
+Theory of Machines, ME3491,MECH,4
+Hydraulics and Pneumatics, ME3492,MECH,4
+Manufacturing Technology, ME3493,MECH,4
+Metrology and Dynamics Laboratory, ME3581,MECH,5
+Design of Machine Elements, ME3591,MECH,5
+Metrology and Measurements, ME3592,MECH,5
+CAD/CAM Laboratory, ME3681,MECH,6
+Heat Transfer Laboratory, ME3682,MECH,6
+Heat and Mass Transfer, ME3691,MECH,6
+MECHATRONICS AND IOT LABORATORY, ME3781,MECH,7
+MECHATRONICS AND IOT, ME3791,MECH,7
+COMPUTER INTEGRATED MANUFACTURING, ME3792,MECH,7
+Project Work / Internship, ME3811,MECH,8
+Disaster Risk Reduction and Management (MC-I, MX3084,MECH,5
+Disaster Risk Reduction And Management, MX3084,CIVIL,6
+INDUSTRIAL SAFETY, MX3089,EEE,6
+EXPERIENCE BASED PROJECT LEARNING, NM1022,CSE,4
+ENERGY TECHNOLOGY, OCH353,EEE,7
+ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING, OCS351,EEE,6
+ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING LAB, OCS351,EEE,7
+DATA SCIENCE FUNDAMENTALS, OCS353,EEE,6
+Drinking Water Supply and Treatment, OEN351,CIVIL,7
+HOLISTIC NUTRITION, OFD351,ECE,7
+PRODUCTION PLANNING AND CONTROL (OPEN ELECTIVES â€“ IV, OIM353,MECH,7
+INTRODUCTION TO NON-DESTRUCTIVE TESTING (OPEN ELECTIVES â€“ III, OML351,MECH,7
+MECHATRONICS, OMR351,ECE,7
+MECHATRONICS, OMR351,EEE,7
+Industrial safety, OPE353,CIVIL,7
+ENGINEERING PHYSICS, PH3151,CIVIL,1
+Engineering Physics, PH3151,CSE,1
+ENGINEERING PHYSICS, PH3151,ECE,1
+Engineering Physics, PH3151,IT,1
+Physics for Civil Engineering, PH3201,CIVIL,2
+Physics for Electrical Engineering, PH3202,EEE,2
+Materials Science, PH3251,MECH,2
+PHYSICS FOR ELECTRONICS ENGINEERING, PH3254,ECE,2
+Physics for Information Science, PH3256,AIDS,2
+Physics for Information Science, PH3256,CSE,2
+Physics for Information Science, PH3256,IT,2
+Research Methodology and IPR, RM4151,MCA,1
+TestingSubject,TEST123,CSE ,1
+TestingSubject,TEST123,MECH,1

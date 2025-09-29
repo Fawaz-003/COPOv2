@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>CO-PO Matrix Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<div th:replace="~{/navbar :: navbar}"></div>
+
+<!-- Flash Messages -->
+<div class="container mt-3">
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+</div>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">CO-PO CORRELATION LEVEL MATRIX</h2>
+
+    <!-- Filters -->
+    <form id="filterForm" class="bg-white p-4 rounded shadow-sm mb-4">
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Department:</label>
+            <div class="col-sm-10">
+                <select id="department" class="form-select" onchange="handleFilterChange()">
+                    <option value="">-- Select Department --</option>
+                    <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Semester:</label>
+            <div class="col-sm-10">
+                <select id="semester" class="form-select" onchange="handleFilterChange()">
+                    <option value="">-- Select Semester --</option>
+                    <option th:each="i : ${#numbers.sequence(1, 8)}" th:value="${i}" th:text="${i}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Subject:</label>
+            <div class="col-sm-10">
+                <select id="subject" class="form-select" onchange="showSubjectCode()" disabled>
+                    <option value="">-- Select Subject --</option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Subject Code:</label>
+            <div class="col-sm-10">
+                <input type="text" id="subjectCodeDisplay" class="form-control" readonly>
+            </div>
+        </div>
+    </form>
+
+    <!-- Excel Upload Form -->
+    <h4 class="text-center mb-3">OR Upload CO-PO Matrix from Excel</h4>
+    <form th:action="@{/copo/upload-excel}" method="post" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm mb-5">
+        <input type="hidden" name="departmentId" id="uploadDeptId">
+        <input type="hidden" name="semester" id="uploadSemester">
+        <input type="hidden" name="subjectName" id="subjectHiddenName">
+        <input type="hidden" name="subjectCode" id="subjectHiddenCode">
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Upload File:</label>
+            <div class="col-sm-10">
+                <input type="file" name="file" class="form-control" accept=".xlsx,.xls,.csv" required>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success px-4">Upload</button>
+        </div>
+    </form>
+
+    <!-- Dynamic Matrix Table -->
+    <form th:action="@{/copo/save}" method="post" id="matrixForm">
+        <input type="hidden" name="departmentId" id="saveDeptId">
+        <input type="hidden" name="semester" id="saveSemester">
+        <input type="hidden" name="subjectName" id="saveSubjectName">
+		<input type="hidden" name="subjectCode" id="subjectHiddenCode">
+
+        <div id="matrixContainer" class="table-responsive mb-3">
+            <table id="matrixTable" class="table table-bordered align-middle text-center d-none">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>CO</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="co : ${#numbers.sequence(1,5)}">
+                        <td th:text="${co}"></td>
+                        <td th:each="outcome : ${outcomes}">
+                            <select class="form-select" th:name="'matrixEntries[' + ${co} + '][' + ${outcome} + ']'">
+                                <option value="-">-</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p id="noDataMsg" class="text-center text-muted d-none">No CO-PO matrix data found for selected subject.</p>
+        </div>
+
+        <div class="text-center mb-5 d-none" id="saveBtnWrapper">
+            <button type="submit" class="btn btn-primary px-4">Save</button>
+        </div>
+    </form>
+</div>
+
+<!-- JS Logic -->
+<script>
+    function handleFilterChange() {
+        const deptId = document.getElementById("department").value;
+        const semester = document.getElementById("semester").value;
+        const subjectSelect = document.getElementById("subject");
+        const codeInput = document.getElementById("subjectCodeDisplay");
+
+        subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+        subjectSelect.disabled = true;
+        codeInput.value = "";
+
+        // Hide matrix and buttons when filter changes
+        document.getElementById("matrixTable").classList.add("d-none");
+        document.getElementById("noDataMsg").classList.add("d-none");
+        document.getElementById("saveBtnWrapper").classList.add("d-none");
+
+        if (!deptId || !semester) return;
+
+        fetch(`/subjects/by-deptId-sem?department=${deptId}&semester=${semester}`)
+            .then(response => response.json())
+            .then(subjects => {
+                if (subjects.length > 0) {
+                    subjects.forEach(subject => {
+                        const option = document.createElement("option");
+                        option.value = subject.name;
+                        option.text = subject.name;
+                        option.setAttribute("data-code", subject.code);
+                        subjectSelect.appendChild(option);
+                    });
+                    subjectSelect.disabled = false;
+                } else {
+                    subjectSelect.innerHTML = '<option value="">No subjects found</option>';
+                }
+            })
+            .catch(err => console.error("Error loading subjects:", err));
+    }
+
+	function showSubjectCode() {
+	    const selected = document.getElementById("subject").selectedOptions[0];
+	    const code = selected?.getAttribute("data-code") || "";
+	    const subjectName = selected?.value || "";
+	    const deptId = document.getElementById("department").value;
+	    const semester = document.getElementById("semester").value;
+
+	    document.getElementById("subjectCodeDisplay").value = code;
+	    document.getElementById("subjectHiddenName").value = subjectName;
+	    document.getElementById("subjectHiddenCode").value = code;
+
+	    document.getElementById("saveDeptId").value = deptId;
+	    document.getElementById("uploadDeptId").value = deptId;
+
+	    document.getElementById("saveSemester").value = semester;
+	    document.getElementById("uploadSemester").value = semester;
+
+	    document.getElementById("saveSubjectName").value = subjectName;
+
+	    fetchMatrix(deptId, semester, subjectName, code);
+	
+        // Clear previous matrix selections
+        document.querySelectorAll("#matrixTable select").forEach(sel => sel.value = "-");
+
+        if (!deptId || !semester || !subjectName) {
+            // Hide matrix UI if data incomplete
+            document.getElementById("matrixTable").classList.add("d-none");
+            document.getElementById("saveBtnWrapper").classList.add("d-none");
+            document.getElementById("noDataMsg").classList.add("d-none");
+            return;
+        }
+		const subjectCode = document.getElementById("subjectCodeDisplay").value;
+
+		fetch(`/copo/matrix?departmentId=${deptId}&semester=${semester}&subjectName=${encodeURIComponent(subjectName)}&subjectCode=${encodeURIComponent(subjectCode)}`)
+
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.json();
+            })
+            .then(data => {
+                if (data && Object.keys(data).length > 0) {
+                    // Fill dropdowns with data
+                    for (const co in data) {
+                        const outcomes = data[co];
+                        for (const outcome in outcomes) {
+                            const value = outcomes[outcome];
+                            const select = document.querySelector(`select[name="matrixEntries[${co}][${outcome}]"]`);
+                            if (select) {
+                                select.value = value;
+                            }
+                        }
+                    }
+                    document.getElementById("matrixTable").classList.remove("d-none");
+                    document.getElementById("saveBtnWrapper").classList.remove("d-none");
+                    document.getElementById("noDataMsg").classList.add("d-none");
+                } else {
+                    // No data found
+                    document.getElementById("matrixTable").classList.add("d-none");
+                    document.getElementById("saveBtnWrapper").classList.add("d-none");
+                    document.getElementById("noDataMsg").classList.remove("d-none");
+                }
+            })
+            .catch(err => {
+                console.error("Error loading matrix:", err);
+                document.getElementById("matrixTable").classList.add("d-none");
+                document.getElementById("saveBtnWrapper").classList.add("d-none");
+                document.getElementById("noDataMsg").classList.remove("d-none");
+            });
+    }
+</script>
+
+<script>
+function fetchMatrix(deptId, semester, subjectName, subjectCode) {
+    fetch(`/copo/matrix?departmentId=${deptId}&semester=${semester}&subjectName=${encodeURIComponent(subjectName)}&subjectCode=${encodeURIComponent(subjectCode)}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log("Mapped data ::", data);
+
+            const outcomes = data.outcomes;
+            const matrix = data.matrix;
+
+            const table = document.getElementById("matrixTable");
+            const thead = table.querySelector("thead tr");
+            const tbody = table.querySelector("tbody");
+
+            // Clear existing table head and body
+            thead.innerHTML = '<th>CO</th>';
+            tbody.innerHTML = '';
+
+            // Add outcome headers (PO1, PO2, ..., PSO1, etc.)
+            outcomes.forEach(outcome => {
+                const th = document.createElement("th");
+                th.textContent = outcome;
+                thead.appendChild(th);
+            });
+
+            // Populate rows for each CO (1–5)
+            for (let co = 1; co <= 5; co++) {
+                const row = document.createElement("tr");
+                const coCell = document.createElement("td");
+                coCell.textContent = `CO${co}`;
+                row.appendChild(coCell);
+
+                outcomes.forEach(outcome => {
+                    const td = document.createElement("td");
+                    const select = document.createElement("select");
+                    select.classList.add("form-select");
+                    select.name = `matrixEntries[${co}][${outcome}]`;
+
+                    ["-", "1", "2", "3"].forEach(val => {
+                        const option = document.createElement("option");
+                        option.value = val;
+                        option.text = val;
+                        if (matrix?.[co]?.[outcome] === val || matrix?.[co]?.[outcome] === Number(val)) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+
+                    td.appendChild(select);
+                    row.appendChild(td);
+                });
+
+                tbody.appendChild(row);
+            }
+
+            // Show table and save button
+            table.classList.remove("d-none");
+            document.getElementById("saveBtnWrapper").classList.remove("d-none");
+            document.getElementById("noDataMsg").classList.add("d-none");
+        })
+        .catch(err => {
+            console.error("Failed to fetch matrix data", err);
+            document.getElementById("matrixTable").classList.add("d-none");
+            document.getElementById("saveBtnWrapper").classList.add("d-none");
+            document.getElementById("noDataMsg").classList.remove("d-none");
+        });
+}
+</script>
+
+
+</body>
+</html>

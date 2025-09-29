@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Faculty Marks View</title>
+	<	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+		<!-- Bootstrap CDN -->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- jQuery CDN -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+	<div th:replace="~{/navbar :: navbar}"></div>
+	<div class="container mt-4">
+		<h2>Faculty Marks View</h2>
+		<form id="filterForm">
+			<div class="row">
+				<div class="col-md-6">
+					<label class="form-label">Department:</label>
+					<select class="form-control" id="department">
+						<option value="">-- Select Department --</option>
+						<option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+					</select>
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">Batch:</label>
+					<select class="form-control" id="batch">
+						<option value="">-- Select Batch --</option>
+						<option th:each="batch : ${batches}" th:value="${batch.id}" th:text="${batch.name}"></option>
+					</select>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-6">
+					<label class="form-label">Section:</label>
+					<select class="form-control" id="section">
+						<option value="">All Sections</option>
+					</select>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-4">
+					<label class="form-label">Semester:</label>
+					<select class="form-control" id="semester">
+						<option value="">-- Select Semester --</option>
+						<option th:each="s : ${#numbers.sequence(1,8)}" th:value="${s}" th:text="${s}"></option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Exam Type:</label>
+					<select class="form-control" id="examType">
+						<option value="">-- Select Exam Type --</option>
+						<option value="CAT 1">CAT 1</option>
+						<option value="CAT 2">CAT 2</option>
+						<option value="CAT 3">CAT 3</option>
+						<option value="Model 1">Model 1</option>
+						<option value="Model 2">Model 2</option>
+						<option value="Lab">Lab</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Subject:</label>
+					<select class="form-control" id="subject">
+						<option value="">-- Select Subject --</option>
+						<option th:each="sub : ${subjects}" th:value="${sub.id}" th:text="${sub.name}"></option>
+					</select>
+				</div>
+			</div>
+			<button type="button" class="btn btn-primary mt-3" id="viewMarksBtn">View Marks</button>
+		</form>
+
+		<div id="marksContainer" class="mt-4"></div>
+	</div>
+
+		<script>
+		$(document).ready(function () {
+				// Load sections when department changes
+				$('#department').on('change', function () {
+					var deptId = $(this).val();
+					var $section = $('#section');
+					$section.empty().append('<option value="">-- Select Section --</option>');
+					if (!deptId) return;
+					$.get('/students/sections', { departmentId: deptId }, function (sections) {
+						(sections || []).forEach(function (s) {
+							$section.append('<option value="' + s.id + '">' + s.sectionName + '</option>');
+						});
+					});
+				});
+
+			$('#viewMarksBtn').click(function () {
+				const department = $('#department').val();
+				const batch = $('#batch').val();
+				const semester = $('#semester').val();
+				const examType = $('#examType').val();
+				const subject = $('#subject').val();
+					const sectionId = $('#section').val();
+
+					if (!department || !batch || !semester || !examType || !subject) {
+					alert("Please fill out all filters.");
+					return;
+				}
+
+				// Fetch filtered marks data
+					$.get(`/faculty-marks/view?departmentId=${department}&batchId=${batch}&semester=${semester}&examType=${examType}&subjectId=${subject}` + (sectionId ? `&sectionId=${sectionId}` : ''), function (data) {
+					if (!data.questions || data.questions.length === 0) {
+						$('#marksContainer').html('<p>No data available for the selected filters.</p>');
+						return;
+					}
+
+					let html = '<table class="table table-bordered"><thead><tr><th>Student Name</th>';
+					data.questions.forEach(q => {
+						html += `<th>${q.part} - ${q.questionNumber} (${q.courseOutcome})</th>`;
+					});
+					html += '</tr></thead><tbody>';
+
+
+					// ✅ Max Marks Row
+					html += '<tr><th>Max Marks</th>';
+					data.questions.forEach(q => {
+						html += `<th>${q.maxMarks}</th>`;
+					});
+					html += '</tr>';
+
+					html += '</thead><tbody>';
+
+
+					//newly added code 
+					// >50% Count Row
+					html += '<tr><td><strong>>50% Count</strong></td>';
+					data.questions.forEach(q => {
+						const threshold = q.maxMarks * 0.5;
+						let count = 0;
+						data.students.forEach(student => {
+							const key = `Part ${q.part} - Q${q.questionNumber}`;
+							const mark = student.marks[key];
+							if (mark !== undefined && mark !== null && mark !== '') {
+								const numericMark = parseFloat(mark);
+								if (!isNaN(numericMark) && numericMark > threshold) {
+									count++;
+								}
+							}
+						});
+						html += `<td><strong>${count}</strong></td>`;
+					});
+					html += '</tr>';
+					
+
+					//newly added code
+					// Students Attempted Row
+					html += '<tr><td><strong>Students Attempted</strong></td>';
+					data.questions.forEach(q => {
+					    let attempted = 0;
+					    data.students.forEach(student => {
+					        const key = `Part ${q.part} - Q${q.questionNumber}`;
+					        const mark = (student.marks[key] || '').toString().toUpperCase().trim();
+					        if (mark !== 'N' && mark !== 'NA' && mark !== 'AB' && mark !== '') {
+					            attempted++;
+					        }
+					    });
+					    html += `<td><strong>${attempted}</strong></td>`;
+					});
+					//end of newlly added code 		
+					
+					
+
+					data.students.forEach(student => {
+						html += `<tr><td>${student.name}</td>`;
+						data.questions.forEach(q => {
+							const key = `Part ${q.part} - Q${q.questionNumber}`;
+							const mark = student.marks[key] || '';
+							html += `<td>${mark}</td>`;
+						});
+						html += '</tr>';
+					});
+
+					html += '</tbody></table>';
+					$('#marksContainer').html(html);
+				}).fail(function () {
+					alert('Error fetching marks data.');
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>
