@@ -133,19 +133,7 @@
                   <form th:action="@{/login/faculties}" method="post">
                     <input type="hidden" name="role" value="faculty" />
                     <div class="mb-3">
-                      <label for="facultyId" class="form-label"
-                        >Faculty Name</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="facultyId"
-                        name="name"
-                        required
-                      />
-                    </div>
-                    <div class="mb-3">
-                      <label for="facultyId" class="form-label"
+                      <label for="facultycode" class="form-label"
                         >Faculty Code</label
                       >
                       <input
@@ -153,6 +141,20 @@
                         class="form-control"
                         id="facultycode"
                         name="facultycode"
+                        placeholder="Enter your faculty code"
+                        required
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label for="facultyPassword" class="form-label"
+                        >Password</label
+                      >
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="facultyPassword"
+                        name="password"
+                        placeholder="Enter your password"
                         required
                       />
                     </div>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Setup Result</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header" th:classappend="${success} ? 'bg-success text-white' : 'bg-danger text-white'">
+                        <h4 th:text="${success} ? 'Setup Completed Successfully' : 'Setup Failed'"></h4>
+                    </div>
+                    <div class="card-body">
+                        <pre th:text="${setupResult}" class="bg-light p-3 rounded" style="white-space: pre-wrap; font-family: monospace;"></pre>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/login" class="btn btn-primary">Go to Login</a>
+                        <a href="/setup/faculty-passwords" class="btn btn-success">Setup Passwords Again</a>
+                        <a href="/setup/test-login" class="btn btn-info">Test Login Info</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+

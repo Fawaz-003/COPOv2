@@ -21,6 +21,8 @@ public class Faculty {
     private String name;
 
     private String designation;
+    
+    private String password; // BCrypt hashed password
 
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false) // Establishes a relationship with Department

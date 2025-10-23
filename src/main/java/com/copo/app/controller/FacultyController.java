@@ -159,4 +159,73 @@ public class FacultyController {
         return "redirect:/faculty";
     }
 
+    // Initialize default passwords for all faculty
+    @GetMapping("/init-passwords")
+    public String initializeDefaultPasswords(RedirectAttributes redirectAttributes) {
+        try {
+            facultyService.setDefaultPasswordForAllFaculty();
+            redirectAttributes.addFlashAttribute("success", "Default passwords (5106) have been set for all faculty members!");
+            logger.info("Default passwords initialized for all faculty");
+        } catch (Exception e) {
+            logger.error("Error initializing default passwords", e);
+            redirectAttributes.addFlashAttribute("error", "Failed to initialize default passwords: " + e.getMessage());
+        }
+        return "redirect:/faculty";
+    }
+
+    // Reset password to default for a specific faculty
+    @GetMapping("/reset-password/{id}")
+    public String resetPasswordToDefault(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            boolean success = facultyService.resetFacultyPasswordToDefault(id);
+            if (success) {
+                redirectAttributes.addFlashAttribute("success", "Password reset to default (5106) for faculty ID: " + id);
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Faculty not found with ID: " + id);
+            }
+        } catch (Exception e) {
+            logger.error("Error resetting password for faculty ID: {}", id, e);
+            redirectAttributes.addFlashAttribute("error", "Failed to reset password: " + e.getMessage());
+        }
+        return "redirect:/faculty";
+    }
+
+    // Debug endpoint to check faculty data and set default passwords
+    @GetMapping("/debug-setup")
+    public String debugFacultySetup(RedirectAttributes redirectAttributes) {
+        try {
+            List<Faculty> allFaculty = facultyService.getAllFaculty();
+            StringBuilder debugInfo = new StringBuilder();
+            debugInfo.append("Total Faculty: ").append(allFaculty.size()).append("\n");
+            
+            int updatedCount = 0;
+            for (Faculty faculty : allFaculty) {
+                debugInfo.append("Faculty: ").append(faculty.getFacultycode())
+                        .append(" - ").append(faculty.getName())
+                        .append(" - Password: ").append(
+                            faculty.getPassword() != null && !faculty.getPassword().isEmpty() 
+                            ? "SET" : "NOT SET"
+                        ).append("\n");
+                
+                // Set password if not set
+                if (faculty.getPassword() == null || faculty.getPassword().trim().isEmpty()) {
+                    boolean success = facultyService.setFacultyPassword(faculty.getId(), "5106");
+                    if (success) {
+                        updatedCount++;
+                        debugInfo.append("  -> Password set to 5106\n");
+                    }
+                }
+            }
+            
+            debugInfo.append("\nUpdated ").append(updatedCount).append(" faculty with password 5106");
+            
+            redirectAttributes.addFlashAttribute("success", "Debug completed: " + debugInfo.toString());
+            logger.info("Debug setup completed. Updated {} faculty members.", updatedCount);
+        } catch (Exception e) {
+            logger.error("Error in debug setup", e);
+            redirectAttributes.addFlashAttribute("error", "Debug setup failed: " + e.getMessage());
+        }
+        return "redirect:/faculty";
+    }
+
 }

@@ -26,6 +26,9 @@ public class FacultyService {
 
     @Autowired
     private DepartmentRepository departmentRepository;
+    
+    @Autowired
+    private PasswordService passwordService;
 
     /**
      * Save a new faculty after checking for duplicate code.
@@ -35,6 +38,13 @@ public class FacultyService {
             if (facultyRepository.existsByFacultycode(faculty.getFacultycode())) {
                 logger.warn("Duplicate faculty code detected: {}", faculty.getFacultycode());
                 throw new RuntimeException("Faculty already exists with code: " + faculty.getFacultycode());
+            }
+
+            // Hash the password if provided
+            if (faculty.getPassword() != null && !faculty.getPassword().trim().isEmpty()) {
+                String hashedPassword = passwordService.hashPassword(faculty.getPassword());
+                faculty.setPassword(hashedPassword);
+                logger.info("Password hashed for faculty: {}", faculty.getFacultycode());
             }
 
             Faculty saved = facultyRepository.save(faculty);
@@ -102,6 +112,13 @@ public class FacultyService {
             faculty.setName(facultyDetails.getName().trim());
             faculty.setDesignation(facultyDetails.getDesignation().trim());
             faculty.setDepartment(facultyDetails.getDepartment());
+            
+            // Update password if provided and not empty
+            if (facultyDetails.getPassword() != null && !facultyDetails.getPassword().trim().isEmpty()) {
+                String hashedPassword = passwordService.hashPassword(facultyDetails.getPassword());
+                faculty.setPassword(hashedPassword);
+                logger.info("Password updated for faculty: {}", faculty.getFacultycode());
+            }
 
             Faculty updated = facultyRepository.save(faculty);
             logger.info("Faculty updated: {}", updated.getFacultycode());
@@ -201,5 +218,113 @@ public class FacultyService {
         result.put("uploadedFaculties", uploaded);
         result.put("errors", errors);
         return result;
+    }
+    
+    /**
+     * Verify faculty credentials (faculty code and password)
+     * @param facultyCode the faculty code
+     * @param password the plain text password
+     * @return the Faculty if credentials are valid, null otherwise
+     */
+    public Faculty verifyFacultyCredentials(String facultyCode, String password) {
+        try {
+            Optional<Faculty> facultyOpt = facultyRepository.findByFacultycode(facultyCode);
+            
+            if (facultyOpt.isPresent()) {
+                Faculty faculty = facultyOpt.get();
+                if (faculty.getPassword() != null && passwordService.verifyPassword(password, faculty.getPassword())) {
+                    logger.info("Faculty credentials verified for: {}", facultyCode);
+                    return faculty;
+                } else {
+                    logger.warn("Invalid password for faculty: {}", facultyCode);
+                }
+            } else {
+                logger.warn("Faculty not found with code: {}", facultyCode);
+            }
+            
+            return null;
+        } catch (Exception e) {
+            logger.error("Error verifying faculty credentials for: {}", facultyCode, e);
+            throw new RuntimeException("Failed to verify faculty credentials. Error: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Set a new password for a faculty member
+     * @param facultyId the faculty ID
+     * @param newPassword the new plain text password
+     * @return true if password was updated successfully
+     */
+    public boolean setFacultyPassword(Long facultyId, String newPassword) {
+        try {
+            Optional<Faculty> facultyOpt = facultyRepository.findById(facultyId);
+            
+            if (facultyOpt.isPresent()) {
+                Faculty faculty = facultyOpt.get();
+                String hashedPassword = passwordService.hashPassword(newPassword);
+                faculty.setPassword(hashedPassword);
+                facultyRepository.save(faculty);
+                logger.info("Password updated for faculty ID: {}", facultyId);
+                return true;
+            } else {
+                logger.warn("Faculty not found with ID: {}", facultyId);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Error setting password for faculty ID: {}", facultyId, e);
+            throw new RuntimeException("Failed to set faculty password. Error: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Set default password "5106" for all faculty members who don't have a password
+     * This method should be called once to initialize all faculty with the default password
+     */
+    public void setDefaultPasswordForAllFaculty() {
+        try {
+            List<Faculty> allFaculty = facultyRepository.findAll();
+            int updatedCount = 0;
+            
+            for (Faculty faculty : allFaculty) {
+                if (faculty.getPassword() == null || faculty.getPassword().trim().isEmpty()) {
+                    String hashedPassword = passwordService.hashPassword("5106");
+                    faculty.setPassword(hashedPassword);
+                    facultyRepository.save(faculty);
+                    updatedCount++;
+                    logger.info("Set default password for faculty: {}", faculty.getFacultycode());
+                }
+            }
+            
+            logger.info("Default password update completed. Updated {} faculty members.", updatedCount);
+        } catch (Exception e) {
+            logger.error("Error setting default passwords for faculty", e);
+            throw new RuntimeException("Failed to set default passwords. Error: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Reset password to default "5106" for a specific faculty member
+     * @param facultyId the faculty ID
+     * @return true if password was reset successfully
+     */
+    public boolean resetFacultyPasswordToDefault(Long facultyId) {
+        try {
+            Optional<Faculty> facultyOpt = facultyRepository.findById(facultyId);
+            
+            if (facultyOpt.isPresent()) {
+                Faculty faculty = facultyOpt.get();
+                String hashedPassword = passwordService.hashPassword("5106");
+                faculty.setPassword(hashedPassword);
+                facultyRepository.save(faculty);
+                logger.info("Password reset to default for faculty ID: {}", facultyId);
+                return true;
+            } else {
+                logger.warn("Faculty not found with ID: {}", facultyId);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Error resetting password for faculty ID: {}", facultyId, e);
+            throw new RuntimeException("Failed to reset faculty password. Error: " + e.getMessage());
+        }
     }
 }

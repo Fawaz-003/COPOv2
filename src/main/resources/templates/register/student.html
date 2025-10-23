@@ -199,11 +199,9 @@
                             <!-- Section -->
                             <div class="mb-4">
                                 <label for="section" class="form-label">Section (Optional)</label>
-                                <select class="form-control" id="section" th:field="*{section.id}">
+                                <select class="form-control" id="section" name="section.id">
                                     <option value="">-- Select Section --</option>
-                                    <option th:each="section : ${sections}" 
-                                            th:value="${section.id}" 
-                                            th:text="${section.sectionName}"></option>
+                                    <!-- Sections will be populated dynamically via AJAX -->
                                 </select>
                             </div>
                             
@@ -225,5 +223,57 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery for AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Dynamic Section Loading Script -->
+    <script>
+        $(document).ready(function() {
+            // Handle department selection change
+            $('#department').change(function() {
+                var departmentId = $(this).val();
+                var sectionSelect = $('#section');
+                
+                // Clear existing options except the first one
+                sectionSelect.find('option:not(:first)').remove();
+                
+                if (departmentId && departmentId !== '') {
+                    // Show loading state
+                    sectionSelect.append('<option value="">Loading sections...</option>');
+                    
+                    // Make AJAX call to get sections for the selected department
+                    $.ajax({
+                        url: '/students/sections',
+                        method: 'GET',
+                        data: { departmentId: departmentId },
+                        success: function(sections) {
+                            // Clear loading option
+                            sectionSelect.find('option:last').remove();
+                            
+                            if (sections && sections.length > 0) {
+                                // Add sections to dropdown
+                                $.each(sections, function(index, section) {
+                                    sectionSelect.append('<option value="' + section.id + '">' + section.sectionName + '</option>');
+                                });
+                            } else {
+                                // No sections available
+                                sectionSelect.append('<option value="">No sections available</option>');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            // Clear loading option
+                            sectionSelect.find('option:last').remove();
+                            sectionSelect.append('<option value="">Error loading sections</option>');
+                            console.error('Error loading sections:', error);
+                        }
+                    });
+                } else {
+                    // Reset to default state
+                    sectionSelect.append('<option value="">-- Select Section --</option>');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

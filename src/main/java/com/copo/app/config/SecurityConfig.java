@@ -15,7 +15,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())  // Disable CSRF for form login simplicity
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/**","/**", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/login/**","/**", "/css/**", "/js/**", "/images/**", "/students/sections", "/setup/**").permitAll()
              // Student access: only these endpoints
                 .requestMatchers(
                     "/student-marks",

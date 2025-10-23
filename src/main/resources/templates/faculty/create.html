@@ -42,6 +42,12 @@
 					required>
 			</div>
 			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" class="form-control" th:field="*{password}"
+					placeholder="Enter password" required>
+				<small class="form-text text-muted">Password will be securely hashed using BCrypt</small>
+			</div>
+			<div class="form-group">
 				<label for="department">Department</label>
 				<select id="department" name="department.id" class="form-control" th:field="*{department.id}" required>
 					<option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>

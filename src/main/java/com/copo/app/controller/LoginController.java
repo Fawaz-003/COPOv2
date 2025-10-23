@@ -83,11 +83,12 @@ public class LoginController {
 
     @PostMapping("/faculties")
     public String facultyLogin(@RequestParam String facultycode,
-                               @RequestParam String name,
+                               @RequestParam String password,
                                HttpSession session,
                                Model model) {
     	
-    	Faculty faculty = loginService.validateFaculty(facultycode, name);
+    	// Use only password-based authentication
+    	Faculty faculty = loginService.validateFacultyWithPassword(facultycode, password);
     	
     	System.out.println("login faculty "+faculty);
         if (faculty != null) {
@@ -100,7 +101,7 @@ public class LoginController {
         	return "redirect:/faculty/home";
         } else {
             // Add error message to the model
-            model.addAttribute("error", "Invalid Faculty Name or Faculty Code!");
+            model.addAttribute("error", "Invalid Faculty Code or Password!");
             return "login/login"; // Return to login.html
         }
     }

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/students")
 public class StudentController {
 
     @Autowired
@@ -37,7 +36,7 @@ public class StudentController {
     private BatchService batchService;
 
     // List all students
-    @GetMapping
+    @GetMapping("/students")
     public String getAllStudents(Model model) {
         try {
             List<Student> studentList = studentService.getAllStudents();
@@ -53,7 +52,7 @@ public class StudentController {
     }
 
     // Student dashboard
-    @GetMapping("/home")
+    @GetMapping("/students/home")
     public String studentHome(HttpSession session, Model model) {
         try {
             Student student = (Student) session.getAttribute("loggedDetails");
@@ -69,8 +68,8 @@ public class StudentController {
         }
     }
     
- // Filter students by department and batch
-    @GetMapping(value = "/filter", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+    // Filter students by department and batch
+    @GetMapping(value = "/students/filter", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, Object> filterStudents(
         @RequestParam(required = false) String department,
@@ -111,7 +110,7 @@ public class StudentController {
     }
 
     // Get sections by department ID (for AJAX calls)
-    @GetMapping("/sections")
+    @GetMapping("/students/sections")
     @ResponseBody
     public List<com.copo.app.model.Section> getSectionsByDepartment(@RequestParam Long departmentId) {
         try {
@@ -123,7 +122,7 @@ public class StudentController {
     }
 
     // Show form to create student
-    @GetMapping("/new")
+    @GetMapping("/students/new")
     public String showCreateStudentForm(Model model) {
         try {
             model.addAttribute("student", new Student());
@@ -139,7 +138,7 @@ public class StudentController {
     }
 
     // Save new student
-    @PostMapping
+    @PostMapping("/students")
     public String createStudent(@ModelAttribute Student student, RedirectAttributes redirectAttributes) {
         try {
             studentService.saveStudent(student);
@@ -152,7 +151,7 @@ public class StudentController {
     }
 
     // Edit student form
-    @GetMapping("/edit/{id}")
+    @GetMapping("/students/edit/{id}")
     public String showEditStudentForm(@PathVariable Long id, Model model) {
         try {
             Student student = studentService.getStudentById(id)
@@ -171,7 +170,7 @@ public class StudentController {
     }
 
     // Update student
-    @PostMapping("/edit/{id}")
+    @PostMapping("/students/edit/{id}")
     public String updateStudent(@PathVariable Long id, @ModelAttribute Student student, RedirectAttributes redirectAttributes) {
         try {
             studentService.updateStudent(id, student);
@@ -184,7 +183,7 @@ public class StudentController {
     }
 
     // Delete student
-    @GetMapping("/delete/{id}")
+    @GetMapping("/students/delete/{id}")
     public String deleteStudent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             studentService.deleteStudent(id);
@@ -266,7 +265,7 @@ public class StudentController {
     }
 
     // Upload student CSV
-    @PostMapping("/upload-csv")
+    @PostMapping("/students/upload-csv")
     public String uploadStudentCSV(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         try {
         	logger.warn("Students upload started");

@@ -15,6 +15,9 @@ public class LoginService {
     StudentRepository studentRepository;
 	@Autowired
     FacultyRepository facultyRepository;
+	
+	@Autowired
+	private FacultyService facultyService;
 
 
     public Student validateStudent(String userId, String dob) {
@@ -23,5 +26,15 @@ public class LoginService {
 
     public Faculty validateFaculty(String facultycode, String name) {
         return facultyRepository.findByFacultycodeAndName(facultycode, name).orElse(null);
+    }
+    
+    /**
+     * Validate faculty using faculty code and password (new secure method)
+     * @param facultycode the faculty code
+     * @param password the plain text password
+     * @return the Faculty if credentials are valid, null otherwise
+     */
+    public Faculty validateFacultyWithPassword(String facultycode, String password) {
+        return facultyService.verifyFacultyCredentials(facultycode, password);
     }
 }
